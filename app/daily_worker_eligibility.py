@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta, date
+from app.daily_worker_eligibility import daily_worker_eligibility_app
 import calendar
 
 # 달력의 시작 요일을 일요일로 설정
