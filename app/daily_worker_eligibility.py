@@ -66,7 +66,7 @@ def render_calendar_interactive(apply_date):
     /* Light Mode */
     /* 요일 헤더 기본 글자색 (라이트 모드) */
     .day-header span {{
-        color: #e5e5e5 !important; /* 라이트 모드일 때 검정색 */
+        color: #000000 !important; /* 라이트 모드일 때 검정색 */
     }}
 
     /* Dark Mode (prefers-color-scheme) */
@@ -83,7 +83,7 @@ def render_calendar_interactive(apply_date):
 
     /* 요일 헤더 공통 스타일 (폰트 크기 및 정렬) */
     .day-header span {{
-        font-size: 1.1em !important; /* 요일 폰트 크기 */
+        font-size: 1.5em !important; /* 요일 폰트 크기 */
         text-align: center !important; /* 가운데 정렬 */
         display: block !important; /* text-align을 위해 block으로 설정 */
         width: 100% !important; /* 부모 div의 너비에 맞춤 */
@@ -104,7 +104,7 @@ def render_calendar_interactive(apply_date):
     /* 커스텀 날짜 박스 스타일 (버튼처럼 동작) */
     .calendar-day-box {{
         width: 45px; /* 날짜 박스 너비 */
-        height: 45px; /* 날짜 박스 높이 */
+        height: 35px; /* 날짜 박스 높이 */
         display: flex;
         align-items: center;
         justify-content: center;
