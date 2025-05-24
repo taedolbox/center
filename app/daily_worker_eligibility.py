@@ -221,7 +221,7 @@ def render_calendar_interactive(apply_date):
             font-size: 0.7em;
         }}
         button[data-testid="stButton"] p {{
-            font-size: 0.7em !important;
+            font-size: 1em !important;
         }}
         .day-header span {{
             font-size: 0.7em !important;
