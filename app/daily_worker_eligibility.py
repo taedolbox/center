@@ -210,12 +210,12 @@ def render_calendar_interactive(apply_date):
     }}
 
     /* 모바일 반응형 조절 */
-    @media (max-width: 600px) {{
+    @media (max-width: 900px) {{
         div[data-testid="stHorizontalBlock"] > div {{
             max-width: 100%;
         }}
         div[data-testid="stHorizontalBlock"] > div > div {{
-            flex-basis: calc(100% / 7 - 2px);
+            flex-basis: calc(100% / 7 - 0.1px);
         }}
         .calendar-day-box {{
             height: 8vw;
@@ -227,7 +227,7 @@ def render_calendar_interactive(apply_date):
             font-size: 0.9em !important;
         }}
         .day-header span {{
-            font-size: 0.8em !important;
+            font-size: 0.75em !important;
         }}
     }}
     </style>
