@@ -24,14 +24,15 @@ def main():
         menus = {
             "수급자격": ["임금 체불 판단", "원거리 발령 판단", "일용근로자 수급자격 요건 모의계산"],  # ✅ 추가
             "실업인정": ["실업인정"],
-            "취업촉진수당": ["조기재취업수당"]
+            "취업촉진수당": ["조기재취업수당"],
+            "실업급여 신청 가능 시점": ["실업급여 신청 가능 시점"]
         }
         all_questions = {
             "임금 체불 판단": get_wage_delay_questions(),
             "원거리 발령 판단": get_remote_assignment_questions(),
-            "일용근로자 수급자격 요건 모의계산": [],  # ❕질문 리스트 필요시 채울 수 있음
             "실업인정": [],
-            "조기재취업수당": get_employment_questions() + get_self_employment_questions()
+            "조기재취업수당": get_employment_questions() + get_self_employment_questions(),
+            "일용직(건설일용포함)": get_daily_worker_eligibility_questions()  # ❕질문 리스트 필요시 채울 수 있음get_remote_assignment_questions
         }
 
         # Filter menus based on search query
@@ -78,28 +79,28 @@ def main():
             wage_delay_app()
         elif sub_menu == "원거리 발령 판단":
             remote_assignment_app()
-        elif sub_menu == "일용근로자 수급자격 요건 모의계산":  # ✅ 추가
-            daily_worker_eligibility_app()
     elif menu == "실업인정" and sub_menu:
         if sub_menu == "실업인정":
             unemployment_recognition_app()
     elif menu == "취업촉진수당" and sub_menu:
         if sub_menu == "조기재취업수당":
             early_reemployment_app()
-
+    elif menu == "실업급여 신청 가능 시점" and sub_menu:        
+        if sub_menu == "일용직(건설일용포함)":  # ✅ 추가
+            daily_worker_eligibility_app()
+    
     # Auto-call function based on search query
     if search_query and selected_sub_menu:
         if selected_sub_menu == "임금 체불 판단":
             wage_delay_app()
         elif selected_sub_menu == "원거리 발령 판단":
-            remote_assignment_app()
-        elif selected_sub_menu == "일용근로자 수급자격 요건 모의계산":  # ✅ 추가
-            daily_worker_eligibility_app()
+            remote_assignment_app()     
         elif selected_sub_menu == "실업인정":
             unemployment_recognition_app()
         elif selected_sub_menu == "조기재취업수당":
             early_reemployment_app()
-
+        elif selected_sub_menu == "일용직(건설일용포함)":  # ✅ 추가
+            daily_worker_eligibility_app()
     st.markdown("---")
     st.caption("ⓒ 2025 실업급여 도우미는 도움을 드리기 위한 목적입니다. 실제 가능 여부는 고용센터의 판단을 기준으로 합니다.")
     st.markdown("[나의 지역 고용센터 찾기](https://www.work24.go.kr/cm/c/d/0190/retrieveInstSrchLst.do)에서 자세한 정보를 확인하세요.")
