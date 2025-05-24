@@ -208,7 +208,7 @@ def render_calendar_interactive(apply_date):
     }}
 
     /* 모바일 반응형 조절 */
-    @media (max-width: 600px) {{
+    @media (max-width: 700px) {{
         div[data-testid="stHorizontalBlock"] > div {{
             max-width: 100%;
         }}
@@ -221,10 +221,10 @@ def render_calendar_interactive(apply_date):
             font-size: 0.7em;
         }}
         button[data-testid="stButton"] p {{
-            font-size: 0.9em !important;
+            font-size: 0.7em !important;
         }}
         .day-header span {{
-            font-size: 0.8em !important;
+            font-size: 0.7em !important;
         }}
     }}
     </style>
