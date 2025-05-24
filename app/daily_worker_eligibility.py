@@ -208,7 +208,7 @@ def render_calendar_interactive(apply_date):
     }}
 
     /* 모바일 반응형 조절 */
-    @media (max-width: 700px) {{
+    @media (max-width: 500px) {{
         div[data-testid="stHorizontalBlock"] > div {{
             max-width: 100%;
         }}
