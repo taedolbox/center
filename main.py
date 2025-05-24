@@ -75,7 +75,7 @@ def main():
         elif selected_sub_menu == "조기재취업수당":
             early_reemployment_app()
         # ▼▼▼▼▼ 이 부분을 수정합니다! ▼▼▼▼▼
-        elif selected_sub_menu == "실업급여 신청가능 시점":
+        #elif selected_sub_menu == "실업급여 신청가능 시점":
             #st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다.")
         elif selected_sub_menu == "일용직(건설일용포함)": # 'menus'에서 사용한 이름과 정확히 일치
             daily_worker_eligibility_app()
