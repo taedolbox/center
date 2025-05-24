@@ -216,9 +216,9 @@ def render_calendar_interactive(apply_date):
             flex-basis: calc(100% / 7);
         }}
         .calendar-day-box {{
-            width: 35px; /* 모바일에서 약간 작게 */
-            height: 35px;
-            font-size: 0.9em;
+            width: 30px; /* 모바일에서 약간 작게 */
+            height: 30px;
+            font-size: 0.7em;
         }}
         button[data-testid="stButton"] p {{
             font-size: 0.9em !important;
