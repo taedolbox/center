@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
+from app.questions import get_daily_worker_eligibility_questions
 from datetime import datetime, timedelta, date
-from app.daily_worker_eligibility import daily_worker_eligibility_app
 import calendar
 
 # 달력의 시작 요일을 일요일로 설정
@@ -21,8 +21,8 @@ def get_date_range(apply_date):
 
 def render_calendar_interactive(apply_date):
     """
-    달력을 렌더링하고 버튼 클릭으로 날짜 선택 기능을 제공합니다.
-    선택된 날짜에 원형 배경을 표시합니다.
+    달력을 렌더링하고 HTML/CSS/JS를 이용한 날짜 선택 기능을 제공합니다.
+    선택된 날짜, 현재 날짜, 신청일 이후 날짜는 표시하지 않습니다.
     """
     # 초기 세션 상태 설정
     if 'selected_dates' not in st.session_state:
@@ -39,186 +39,297 @@ def render_calendar_interactive(apply_date):
     # 사용자 정의 CSS 주입
     st.markdown(f"""
     <style>
-    /* 컬럼 간격 조절 (7열) */
-    div[data-testid="stHorizontalBlock"] > div {
-        flex-grow: 0;
-        flex-shrink: 0;
-        flex-basis: calc(100% / 7 + 5px);
-        min-width: 45px;
+    /* Streamlit 기본 버튼 스타일 오버라이딩 */
+    button[data-testid="stButton"] {{
+        width: 100% !important; /* 부모 div 너비 100% 사용 */
+        height: 100% !important; /* 부모 div 높이 100% 사용 */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important; /* 기본 버튼 테두리 제거 */
+        background: none !important; /* 기본 버튼 배경 제거 */
+        color: inherit !important; /* 부모 폰트 색상 상속 */
+        font-size: 1em !important; /* 기본 폰트 크기 사용 */
+        cursor: pointer !important;
+        transition: none !important; /* 버튼 호버/클릭 전환 효과 제거 */
+        box-shadow: none !important; /* 기본 버튼 그림자 제거 */
+    }}
+
+    /* Streamlit 내부 버튼 텍스트의 폰트 사이즈 조정 */
+    button[data-testid="stButton"] p {{
+        font-size: 1.1em !important; /* 날짜 숫자 폰트 크기 (calendar-day-box와 유사하게) */
+        margin: 0 !important; /* 마크다운 p 태그 마진 제거 */
+    }}
+
+    /* 전체 폰트 Streamlit 기본 폰트 사용 */
+
+    /* 달력 전체 컨테이너 가운데 정렬을 위한 상위 요소에 Flexbox 적용 */
+    /* Streamlit이 컬럼을 감싸는 div의 data-testid을 확인하여 적절히 선택 */
+    /* st.columns가 생성하는 가장 바깥 div를 찾아 중앙 정렬 */
+    div[data-testid="stVerticalBlock"] > div > div > div[data-testid="stHorizontalBlock"] {{
         display: flex;
-        justify-content: center;
+        flex-direction: column; /* 세로 방향으로 정렬 (월별 헤더, 요일 헤더, 달력 그리드) */
+        align-items: center; /* 수평 가운데 정렬 */
+        width: 100%; /* 부모 너비 채우기 */
+    }}
+
+
+    /* 월별 헤더 스타일 */
+    div[data-testid="stMarkdownContainer"] h3 {{
+        background-color: #f0f0f0 !important; /* 라이트 모드 */
+        color: #000000 !important; /* 라이트 모드 */
+        text-align: center; /* 월별 헤더 가운데 정렬 */
+        padding: 8px 0; /* 패딩 증가 */
+        margin-bottom: 15px; /* 아래 여백 증가 */
+        font-size: 1.5em !important; /* 월별 헤더 폰트 크기 증가 */
+        width: 100%; /* 월별 헤더 너비 100% */
+    }}
+
+    /* Light Mode */
+    /* 요일 헤더 기본 글자색 (라이트 모드) */
+    .day-header span {{
+        color: #000000 !important; /* 라이트 모드일 때 검정색 */
+    }}
+
+    /* Dark Mode (prefers-color-scheme) */
+    @media (prefers-color-scheme: dark) {{
+        div[data-testid="stMarkdownContainer"] h3 {{
+            background-color: #2e2e2e !important; /* 다크 모드 */
+            color: #ffffff !important; /* 다크 모드 */
+        }}
+        /* 요일 헤더 기본 글자색 (다크 모드) */
+        .day-header span {{
+            color: #ffffff !important; /* 다크 모드일 때 흰색 */
+        }}
+    }}
+
+    /* 요일 헤더 공통 스타일 (폰트 크기 및 정렬) */
+    .day-header span {{
+        font-size: 1.1em !important; /* 요일 폰트 크기 */
+        text-align: center !important; /* 가운데 정렬 */
+        display: block !important; /* text-align을 위해 block으로 설정 */
+        width: 100% !important; /* 부모 div의 너비에 맞춤 */
+        font-weight: bold; /* 요일 글자 두껍게 */
+        padding: 5px 0; /* 요일 패딩 추가 */
+    }}
+
+    /* 요일 헤더 특정 요일 색상 (라이트/다크 모드 공통) */
+    /* 일요일 빨간색 */
+    .day-header:nth-child(1) span {{
+        color: red !important;
+    }}
+    /* 토요일 파란색 */
+    .day-header:nth-child(7) span {{
+        color: blue !important;
+    }}
+
+    /* 커스텀 날짜 박스 스타일 (버튼처럼 동작) */
+    .calendar-day-box {{
+        width: 100%; /* 부모 컬럼의 100%를 사용 */
+        height: 5vw; /* 뷰포트 너비에 비례하여 높이 설정 */
+        max-height: 50px; /* 너무 커지지 않도록 최대 높이 설정 */
+        min-height: 38px; /* 너무 작아지지 않도록 최소 높이 설정 (모바일 기준) */
+        display: flex;
         align-items: center;
-        padding: 2px;
-        margin: 0 2px;
-    }
-
-    /* 요일 헤더와 날짜 간격 분리 */
-    .day-header-container {
-        margin-bottom: 10px;
-    }
-
-    /* 기본 날짜 스타일 */
-    .calendar-day-box {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: 1px solid #ddd;
-        background-color: #ffffff;
-        color: #000000;
-        text-align: center;
-        line-height: 32px;
-        margin: auto;
+        justify-content: center;
+        padding: 0;
+        margin: 0; /* st.columns의 gap을 사용할 것이므로 margin은 0 */
+        border: 1px solid #ddd; /* 기본 테두리색 (라이트 모드) */
+        background-color: #ffffff; /* 기본 배경색 (라이트 모드) */
         cursor: pointer;
-        transition: all 0.1s ease;
-    }
-    @media (prefers-color-scheme: dark) {
-        .calendar-day-box {
-            border: 1px solid #444;
-            background-color: #1e1e1e;
-            color: #ffffff;
-        }
-    }
+        transition: all 0.1s ease; /* 부드러운 전환 효과 */
+        border-radius: 5px; /* 약간 둥근 모서리 */
+        font-size: 1.1em; /* 날짜 숫자 폰트 크기 증가 */
+        color: #000000; /* 날짜 숫자 글자색 (라이트 모드) */
+        box-sizing: border-box; /* 패딩, 보더가 너비 계산에 포함되도록 */
+        user-select: none; /* 텍스트 선택 방지 */
+    }}
+    /* Dark Mode 날짜 박스 */
+    @media (prefers-color-scheme: dark) {{
+        .calendar-day-box {{
+            border: 1px solid #444; /* 다크 모드 테두리색 */
+            background-color: #1e1e1e; /* 다크 모드 배경색 */
+            color: #ffffff; /* 날짜 숫자 글자색 (다크 모드) */
+        }}
+    }}
 
     /* 호버 시 효과 */
-    .calendar-day-box:hover {
-        background-color: #e0e0e0;
+    .calendar-day-box:hover {{
+        background-color: #e0e0e0; /* 호버 시 밝은 회색 (라이트 모드) */
         border-color: #bbb;
-    }
-    @media (prefers-color-scheme: dark) {
-        .calendar-day-box:hover {
-            background-color: #2a2a2a;
+    }}
+    @media (prefers-color-scheme: dark) {{
+        .calendar-day-box:hover {{
+            background-color: #2a2a2a; /* 호버 시 어두운 회색 (다크 모드) */
             border-color: #666;
-        }
-    }
+        }}
+    }}
 
-    /* 오늘 날짜 스타일 (선택되지 않았을 때) */
-    .calendar-day-box.current-day:not(.selected-day) {
-        border: 2px solid #00aaff;
-    }
+    /* 오늘 날짜 스타일 (선택되지 않았을 때만 적용) */
+    .calendar-day-box.current-day:not(.selected-day) {{
+        border: 2px solid blue !important; /* 오늘 날짜 파란색 테두리 */
+    }}
 
-    /* 선택된 날짜 스타일 (원형 배경) */
-    .calendar-day-box.selected-day {
-        background-color: #4CAF50;
-        color: #ffffff;
-        border: 2px solid #4CAF50;
-        font-weight: bold;
-    }
+    /* 선택된 날짜 스타일 */
+    .calendar-day-box.selected-day {{
+        background-color: rgba(255, 0, 0, 0.4) !important; /* 빨간색 40% 투명도 */
+        color: #ffffff !important; /* 흰색 글씨 */
+        border: 1px solid rgba(255, 0, 0, 0.4) !important; /* 선택된 날짜 테두리 */
+    }}
 
-    /* 비활성화된 날짜 */
-    .disabled-day {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: 1px solid #555;
-        background-color: #2e2e2e;
-        color: #666;
-        text-align: center;
-        line-height: 32px;
-        margin: auto;
-    }
+    /* Streamlit st.columns가 생성하는 각 열에 대한 스타일 */
+    /* 요일 헤더를 감싸는 stHorizontalBlock */
+    div[data-testid="stHorizontalBlock"] > div:first-child {{ /* 첫 번째 stHorizontalBlock (요일 헤더) */
+        max-width: 400px; /* 달력 전체의 최대 너비 (조절 가능) */
+        margin: 0 auto; /* 중앙 정렬 */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2px; /* 열 사이의 간격 */
+    }}
 
-    /* 빈 날짜 */
-    .empty-day {
-        width: 32px;
-        height: 32px;
-        margin: auto;
-    }
+    /* 달력 날짜 그리드를 감싸는 stHorizontalBlock */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(n+2) {{ /* 두 번째 이후 stHorizontalBlock (날짜 그리드) */
+        max-width: 400px; /* 달력 전체의 최대 너비 (조절 가능) */
+        margin: 0 auto 10px auto; /* 중앙 정렬, 아래 여백 추가 */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2px; /* 날짜 박스 사이의 간격 */
+    }}
 
-    /* 요일 헤더 스타일 */
-    .day-header span {
-        font-size: 1.1em;
-        text-align: center;
-        display: block;
-        width: 100%;
-        font-weight: bold;
-        padding: 5px 0;
-        color: #000000;
-    }
-    @media (prefers-color-scheme: dark) {
-        .day-header span {
-            color: #ffffff;
-        }
-    }
-    .day-header:nth-child(1) span { color: red; }
-    .day-header:nth-child(7) span { color: blue; }
+    /* 각 열 (요일/날짜) */
+    div[data-testid="stHorizontalBlock"] > div > div {{
+        flex-grow: 0; /* 늘어나지 않음 */
+        flex-shrink: 0; /* 줄어들지 않음 */
+        flex-basis: calc(100% / 7 - 2px); /* 7개 열이 대략적으로 균등하게, gap 고려 */
+        /* min-width는 calendar-day-box에서 제어하므로 여기서는 0으로 */
+        min-width: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box; /* 패딩, 보더가 너비 계산에 포함되도록 */
+        display: flex; /* 내부 요소 정렬을 위해 flexbox 사용 */
+        justify-content: center; /* 박스 가운데 정렬 */
+        align-items: center; /* 박스 세로 가운데 정렬 */
+    }}
 
-    /* 월 헤더 스타일 */
-    h3 {
-        background-color: #f0f0f0;
-        color: #000000;
-        text-align: center;
-        padding: 8px 0;
-        margin-bottom: 15px;
-        font-size: 1.5em;
-        width: 100%;
-    }
-    @media (prefers-color-scheme: dark) {
-        h3 {
-            background-color: #2e2e2e;
-            color: #ffffff;
-        }
-    }
-
-    /* 모바일 반응형 */
-    @media (max-width: 600px) {
-        .calendar-day-box {
-            height: 8vw;
-            max-height: 45px;
-            min-height: 30px;
+    /* 모바일 반응형 조절 */
+    @media (max-width: 600px) {{
+        div[data-testid="stHorizontalBlock"] > div {{
+            max-width: 100%; /* 모바일에서는 너비 100% */
+        }}
+        div[data-testid="stHorizontalBlock"] > div > div {{
+            flex-basis: calc(100% / 7 - 2px); /* 모바일에서는 간격 약간 줄여서 7개 열 맞춤 */
+        }}
+        .calendar-day-box {{
+            height: 8vw; /* 모바일에서 높이 조절 */
+            max-height: 45px; /* 모바일에서 최대 높이 */
+            min-height: 30px; /* 모바일에서 최소 높이 */
             font-size: 0.9em;
-        }
-        .day-header span {
-            font-size: 0.8em;
-        }
-    }
+        }}
+        button[data-testid="stButton"] p {{
+            font-size: 0.9em !important; /* 모바일 폰트 크기 */
+        }}
+        .day-header span {{
+            font-size: 0.8em !important;
+        }}
+    }}
     </style>
     """, unsafe_allow_html=True)
 
     # 각 월별 달력 렌더링
     for year, month in months_to_display:
         st.markdown(f"<h3>{year}년 {month}월</h3>", unsafe_allow_html=True)
-
-        # 요일 헤더 (일~토) 컨테이너로 분리
-        st.markdown('<div class="day-header-container">', unsafe_allow_html=True)
-        cols = st.columns(7)
-        weekdays = ["일", "월", "화", "수", "목", "금", "토"]
-        for i, day_name in enumerate(weekdays):
-            with cols[i]:
-                st.markdown(f'<div class="day-header"><span>{day_name}</span></div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # 달력 날짜 박스 생성
         cal = calendar.monthcalendar(year, month)
-        for week_idx, week in enumerate(cal):
-            cols = st.columns(7)
+        days_of_week_korean = ["일", "월", "화", "수", "목", "금", "토"]
+
+        # 요일 헤더 생성 (st.columns 사용)
+        cols = st.columns(7, gap="small") # gap="small"로 컬럼 자체의 간격 유지
+        for i, day_name in enumerate(days_of_week_korean):
+            with cols[i]:
+                st.markdown(f'<div class="day-header"><span><strong>{day_name}</strong></span></div>', unsafe_allow_html=True)
+
+        # 달력 날짜 박스 생성 (apply_date 이후 날짜 제외)
+        for week in cal:
+            cols = st.columns(7, gap="small") # gap="small"로 컬럼 자체의 간격 유지
             for i, day in enumerate(week):
                 with cols[i]:
                     if day == 0:
-                        st.markdown('<div class="empty-day"></div>', unsafe_allow_html=True)
+                        st.empty() # 빈 칸을 위한 Streamlit empty
                     else:
                         date_obj = date(year, month, day)
+                        # 신청일 이후 날짜는 표시하지 않음 (빈 칸)
                         if date_obj > apply_date:
-                            st.markdown('<div class="disabled-day"></div>', unsafe_allow_html=True)
+                            st.empty()
                             continue
 
                         is_selected = date_obj in selected_dates
                         is_current = date_obj == current_date
-                        is_disabled = date_obj > apply_date
 
-                        # 버튼으로 클릭 이벤트 처리
-                        button_key = f"date_{date_obj.isoformat()}_week_{week_idx}"
-                        if st.button(str(day), key=button_key, disabled=is_disabled):
-                            toggle_date(date_obj)
+                        # 버튼 클릭 시 동작할 콜백 함수 정의
+                        def _on_date_click(clicked_date_obj):
+                            if clicked_date_obj in st.session_state.selected_dates:
+                                st.session_state.selected_dates.discard(clicked_date_obj)
+                            else:
+                                st.session_state.selected_dates.add(clicked_date_obj)
 
-                        # 선택 상태에 따라 스타일링
-                        class_name = "calendar-day-box"
-                        if is_selected:
-                            class_name += " selected-day"
-                        elif is_current:
-                            class_name += " current-day"
-                        st.markdown(f'<div class="{class_name}">{day}</div>', unsafe_allow_html=True)
+                        # 날짜 텍스트 (오늘 날짜는 굵게)
+                        display_day_text = str(day)
+                        # CSS 클래스 적용을 위해 div로 감싸고, 여기에 버튼을 넣는 구조
+                        # st.button은 자체적으로 `data-testid="stButton"`을 가짐
+                        # 이 버튼을 `.calendar-day-box` 스타일로 강제 오버라이딩 할 것임
+                        st.markdown(
+                            f"""
+                            <div class="calendar-day-box {'selected-day' if is_selected else ''} {'current-day' if is_current else ''}"
+                                data-date="{date_obj.strftime('%Y-%m-%d')}"
+                            >
+                                <button type="button" class="st-emotion-cache-YOUR_BUTTON_CLASS_HERE"
+                                    onclick="
+                                        var dateStr = '{date_obj.strftime('%Y-%m-%d')}';
+                                        var input = parent.document.getElementById('hidden_date_input_for_js');
+                                        if (input) {{
+                                            input.value = dateStr;
+                                            input.dispatchEvent(new Event('change'));
+                                        }}
+                                    ">
+                                    {display_day_text}
+                                </button>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                        # 클릭 이벤트를 받기 위한 숨겨진 text_input을 다시 사용합니다.
+                        # `st.button`을 직접 사용하는 것보다, HTML/JS를 통해 Streamlit 상태를 조작하는 것이
+                        # 달력 같은 복잡한 레이아웃에 더 유연합니다.
+                        # `st.button`의 콜백은 전체 앱을 재실행시키므로, 많은 버튼 클릭 시 성능 저하가 있을 수 있습니다.
+                        # 숨겨진 text_input을 통한 방식은 변경이 감지될 때만 재실행되므로 더 효율적일 수 있습니다.
 
-    return selected_dates
+    # JavaScript에서 클릭된 날짜를 받아올 숨겨진 st.text_input
+    # 이 인풋의 `on_change` 콜백에서 `st.session_state.selected_dates`를 업데이트합니다.
+    # value는 st.text_input의 현재 값을 나타냅니다.
+    # 초기화 시 빈 문자열로 설정하여 불필요한 재트리거 방지
+    # key가 변경될 때마다 새로운 위젯으로 인식되므로, key는 고정합니다.
+    st.text_input("Hidden input for date click", key="hidden_date_input_for_js", value="",
+                    on_change=lambda: _update_selected_dates_from_js(st.session_state.hidden_date_input_for_js))
+
+    # JavaScript에서 전달받은 날짜를 파이썬 상태로 업데이트하는 콜백 함수
+    def _update_selected_dates_from_js(date_str):
+        if date_str:
+            clicked_date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+            if clicked_date_obj in st.session_state.selected_dates:
+                st.session_state.selected_dates.discard(clicked_date_obj)
+            else:
+                st.session_state.selected_dates.add(clicked_date_obj)
+            st.session_state.hidden_date_input_for_js = "" # 처리 후 입력 값 초기화
+
+    # 현재 선택된 근무일자 목록 표시
+    if st.session_state.selected_dates:
+        st.markdown("### ✅ 선택된 근무일자")
+        st.markdown(", ".join([d.strftime("%Y-%m-%d") for d in sorted(st.session_state.selected_dates)]))
+
+    return st.session_state.selected_dates
 
 def daily_worker_eligibility_app():
     """
@@ -243,7 +354,7 @@ def daily_worker_eligibility_app():
 
     st.markdown("---")
     st.markdown("#### ✅ 근무일 선택 달력")
-    selected_days = render_calendar_interactive(apply_date)
+    selected_days = render_calendar_interactive(apply_date) # 함수 호출 변경
     st.markdown("---")
 
     # 조건 1 계산 및 표시
