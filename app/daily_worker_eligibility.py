@@ -66,7 +66,7 @@ def render_calendar_interactive(apply_date):
     /* Light Mode */
     /* 요일 헤더 기본 글자색 (라이트 모드) */
     .day-header span {{
-        color: #000000 !important; /* 라이트 모드일 때 검정색 */
+        color: #e5e5e5 !important; /* 라이트 모드일 때 검정색 */
     }}
 
     /* Dark Mode (prefers-color-scheme) */
