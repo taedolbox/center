@@ -26,7 +26,7 @@ def main():
             "실업인정": ["실업인정"],
             "취업촉진수당": ["조기재취업수당"],
             # ▼▼▼▼▼ 이 부분을 수정합니다! ▼▼▼▼▼
-            "실업급여 신청가능 시점": ["일용직(건설일용포함)"] # '일용직' 하위 메뉴 추가 (이름 통일)
+            "실업급여 신청가능 시점": ["실업급여 신청 가능 시점", "일용직(건설일용포함)"] # '일용직' 하위 메뉴 추가 (이름 통일)
             # ▲▲▲▲▲ 이 부분을 수정합니다! ▲▲▲▲▲
         }
         all_questions = {
@@ -57,10 +57,10 @@ def main():
             early_reemployment_app()
     elif menu == "실업급여 신청가능 시점" and sub_menu:
         # ▼▼▼▼▼ 이 부분을 수정합니다! ▼▼▼▼▼
-        if sub_menu == "실업급여 신청가능 시점": # 메인 메뉴와 동일한 하위 메뉴
+        if sub_menu == "실업급여 신청 가능 시점": # 메인 메뉴와 동일한 하위 메뉴
             # 여기에 해당 기능 (예: 일반 실업급여 신청 시점 로직)을 호출
             st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다.")
-        if sub_menu == "일용직(건설일용포함)": # 'menus'에서 사용한 이름과 정확히 일치
+        elif sub_menu == "일용직(건설일용포함)": # 'menus'에서 사용한 이름과 정확히 일치
             daily_worker_eligibility_app()
         # ▲▲▲▲▲ 이 부분을 수정합니다! ▲▲▲▲▲
 
@@ -75,9 +75,9 @@ def main():
         elif selected_sub_menu == "조기재취업수당":
             early_reemployment_app()
         # ▼▼▼▼▼ 이 부분을 수정합니다! ▼▼▼▼▼
-        elif selected_sub_menu == "실업급여 신청가능 시점":
-            #st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다.")
-        if selected_sub_menu == "일용직(건설일용포함)": # 'menus'에서 사용한 이름과 정확히 일치
+        elif selected_sub_menu == "실업급여 신청 가능 시점":
+            st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다.")
+        elif selected_sub_menu == "일용직(건설일용포함)": # 'menus'에서 사용한 이름과 정확히 일치
             daily_worker_eligibility_app()
         # ▲▲▲▲▲ 이 부분을 수정합니다! ▲▲▲▲▲
 
@@ -87,4 +87,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
