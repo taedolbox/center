@@ -7,8 +7,8 @@ import calendar
 # 달력의 시작 요일을 일요일로 설정
 calendar.setfirstweekday(calendar.SUNDAY)
 
-# 현재 날짜와 시간을 기반으로 KST 오후 XX:XX 형식을 생성 (2025년 5월 25일 오전 07:47 KST)
-current_datetime = datetime(2025, 5, 25, 7, 47)  # 2025년 5월 25일 오전 07:47 KST
+# 현재 날짜와 시간을 기반으로 KST 오후 XX:XX 형식을 생성 (2025년 5월 25일 오전 08:01 KST)
+current_datetime = datetime(2025, 5, 25, 8, 1)  # 2025년 5월 25일 오전 08:01 KST
 current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오후 %I:%M KST')
 
 def get_date_range(apply_date):
@@ -36,7 +36,7 @@ def render_calendar_interactive(apply_date):
     end_date_for_calendar = apply_date
     months_to_display = sorted(list(set((d.year, d.month) for d in pd.date_range(start=start_date_for_calendar, end=end_date_for_calendar))))
 
-    # 사용자 정의 CSS 주입 (원형 보정 및 간격 줄임)
+    # 사용자 정의 CSS 주입 (정렬 수정 및 요일 색상 설정)
     st.markdown(f"""
     <style>
     /* Streamlit 기본 버튼 스타일 오버라이딩 */
@@ -84,7 +84,7 @@ def render_calendar_interactive(apply_date):
 
     /* Light Mode */
     .day-header span {{
-        color: #000000 !important;
+        color: #000000 !important; /* 평일 검정색 (라이트 모드) */
     }}
 
     /* Dark Mode */
@@ -94,7 +94,7 @@ def render_calendar_interactive(apply_date):
             color: #ffffff !important;
         }}
         .day-header span {{
-            color: #ffffff !important;
+            color: #ffffff !important; /* 평일 흰색 (다크 모드) */
         }}
     }}
 
@@ -107,13 +107,30 @@ def render_calendar_interactive(apply_date):
         font-weight: bold;
         padding: 5px 0;
     }}
-    .day-header:nth-child(1) span {{ color: red !important; }}
-    .day-header:nth-child(7) span {{ color: blue !important; }}
+    .day-header:nth-child(1) span {{ color: red !important; }} /* 일요일 빨강 */
+    .day-header:nth-child(7) span {{ color: blue !important; }} /* 토요일 파랑 */
+    /* 평일 (월~금) 색상 유지: 라이트 모드에서는 검정, 다크 모드에서는 흰색 */
+    .day-header:nth-child(2) span, 
+    .day-header:nth-child(3) span, 
+    .day-header:nth-child(4) span, 
+    .day-header:nth-child(5) span, 
+    .day-header:nth-child(6) span {{ 
+        color: #000000 !important; /* 라이트 모드에서 평일 검정 */
+    }}
+    @media (prefers-color-scheme: dark) {{
+        .day-header:nth-child(2) span, 
+        .day-header:nth-child(3) span, 
+        .day-header:nth-child(4) span, 
+        .day-header:nth-child(5) span, 
+        .day-header:nth-child(6) span {{ 
+            color: #ffffff !important; /* 다크 모드에서 평일 흰색 */
+        }}
+    }}
 
-    /* 커스텀 날짜 박스 스타일 (원형 보정) */
+    /* 커스텀 날짜 박스 스타일 (정렬 보정) */
     .calendar-day-box {{
-        width: 40px; /* 고정 너비로 원형 보장 */
-        height: 40px; /* 고정 높이로 원형 보장 */
+        width: 35px; /* 크기 조정으로 정렬 보장 */
+        height: 35px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -123,7 +140,7 @@ def render_calendar_interactive(apply_date):
         background-color: #ffffff;
         cursor: pointer;
         transition: all 0.1s ease;
-        border-radius: 50%; /* 원형 유지 */
+        border-radius: 50%;
         font-size: 1.1em;
         color: #000000;
         box-sizing: border-box;
@@ -156,7 +173,7 @@ def render_calendar_interactive(apply_date):
 
     /* 선택된 날짜 스타일 (원형 배경) */
     .calendar-day-box.selected-day {{
-        background-color: #4CAF50 !important; /* 녹색 원 */
+        background-color: #4CAF50 !important;
         color: #ffffff !important;
         border: 2px solid #4CAF50 !important;
         font-weight: bold;
@@ -177,28 +194,29 @@ def render_calendar_interactive(apply_date):
         }}
     }}
 
-    /* Streamlit st.columns 스타일 (간격 줄임) */
+    /* Streamlit st.columns 스타일 (정렬 보정) */
     div[data-testid="stHorizontalBlock"] > div:first-child {{
-        max-width: 400px;
+        max-width: 350px; /* 달력 전체 폭 조정 */
         margin: 0 auto;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 0px; /* 간격 제거 */
+        gap: 0px;
     }}
     div[data-testid="stHorizontalBlock"] > div:nth-child(n+2) {{
-        max-width: 400px;
+        max-width: 350px;
         margin: 0 auto 10px auto;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 0px; /* 간격 제거 */
+        gap: 0px;
     }}
     div[data-testid="stHorizontalBlock"] > div > div {{
         flex-grow: 0;
         flex-shrink: 0;
-        flex-basis: calc(100% / 7); /* 간격 없이 7등분 */
-        min-width: 0 !important;
+        flex-basis: calc(100% / 7); /* 7등분 */
+        min-width: 35px; /* 날짜 박스 크기와 일치 */
+        max-width: 35px; /* 날짜 박스 크기와 일치 */
         padding: 0 !important;
         margin: 0 !important;
         box-sizing: border-box;
@@ -208,23 +226,25 @@ def render_calendar_interactive(apply_date):
     }}
 
     /* 모바일 반응형 조절 */
-    @media (max-width: 900px) {{
+    @media (max-width: 600px) {{
         div[data-testid="stHorizontalBlock"] > div {{
             max-width: 100%;
         }}
         div[data-testid="stHorizontalBlock"] > div > div {{
             flex-basis: calc(100% / 7);
+            min-width: 30px;
+            max-width: 30px;
         }}
         .calendar-day-box {{
-            width: 30px; /* 모바일에서 약간 작게 */
+            width: 30px;
             height: 30px;
-            font-size: 0.7em;
+            font-size: 0.9em;
         }}
         button[data-testid="stButton"] p {{
-            font-size: 1em !important;
+            font-size: 0.9em !important;
         }}
         .day-header span {{
-            font-size: 0.7em !important;
+            font-size: 0.8em !important;
         }}
     }}
     </style>
