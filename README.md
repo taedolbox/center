@@ -9,7 +9,7 @@ pip install -r requirements.txt
 
 ## 실행
 ```bash
-streamlit run app/app.py
+streamlit run app/main.py
 ```
 
 ## 디렉토리 구조
