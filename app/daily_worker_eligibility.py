@@ -7,8 +7,8 @@ import calendar
 # 달력의 시작 요일을 일요일로 설정
 calendar.setfirstweekday(calendar.SUNDAY)
 
-# 현재 날짜와 시간을 기반으로 KST 오후 XX:XX 형식을 생성 (2025년 5월 25일 오전 08:09 KST)
-current_datetime = datetime(2025, 5, 25, 8, 9)  # 2025년 5월 25일 오전 08:09 KST
+# 현재 날짜와 시간을 기반으로 KST 오후 XX:XX 형식을 생성 (2025년 5월 25일 오후 12:03 KST)
+current_datetime = datetime(2025, 5, 25, 12, 3)  # 2025년 5월 25일 오후 12:03 KST
 current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오후 %I:%M KST')
 
 def get_date_range(apply_date):
@@ -21,8 +21,8 @@ def get_date_range(apply_date):
 
 def render_calendar_interactive(apply_date):
     """
-    달력을 렌der링하고 버튼 클릭으로 날짜 선택 기능을 제공합니다.
-    선택된 날짜에 원형 배경을 표시합니다.
+    달력을 렌더링하고 날짜 선택 기능을 제공합니다.
+    선택된 날짜 바로 위에 동그라미를 표시하며, 모바일 기기에 맞게 조정합니다.
     """
     # 초기 세션 상태 설정
     if 'selected_dates' not in st.session_state:
@@ -36,43 +36,21 @@ def render_calendar_interactive(apply_date):
     end_date_for_calendar = apply_date
     months_to_display = sorted(list(set((d.year, d.month) for d in pd.date_range(start=start_date_for_calendar, end=end_date_for_calendar))))
 
-    # 사용자 정의 CSS 주입 (요일 색상 및 정렬 수정)
-    st.markdown(f"""
+    # 사용자 정의 CSS 주입
+    st.markdown("""
     <style>
-    /* Streamlit 기본 버튼 스타일 오버라이딩 */
-    button[data-testid="stButton"] {{
-        width: 100% !important;
-        height: 100% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: none !important;
-        background: none !important;
-        color: inherit !important;
-        font-size: 1em !important;
-        cursor: pointer !important;
-        transition: none !important;
-        box-shadow: none !important;
-    }}
-
-    /* Streamlit 내부 버튼 텍스트의 폰트 사이즈 조정 */
-    button[data-testid="stButton"] p {{
-        font-size: 1.1em !important;
-        margin: 0 !important;
-    }}
-
-    /* 달력 전체 컨테이너 가운데 정렬 */
-    div[data-testid="stVerticalBlock"] > div > div > div[data-testid="stHorizontalBlock"] {{
+    /* 달력 전체 컨테이너 정렬 (왼쪽 여백 제거 및 중앙 정렬) */
+    div[data-testid="stVerticalBlock"] > div > div > div[data-testid="stHorizontalBlock"] {
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
-    }}
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+    }
 
     /* 월별 헤더 스타일 */
-    div[data-testid="stMarkdownContainer"] h3 {{
+    div[data-testid="stMarkdownContainer"] h3 {
         background-color: #f0f0f0 !important;
         color: #000000 !important;
         text-align: center;
@@ -80,174 +58,233 @@ def render_calendar_interactive(apply_date):
         margin-bottom: 15px;
         font-size: 1.5em !important;
         width: 100%;
-    }}
+    }
 
     /* Light Mode */
-    .day-header span {{
-        color: #000000 !important; /* 평일 검정색 (라이트 모드) */
-    }}
+    .day-header span {
+        color: #000000 !important; /* 기본 검정색 (라이트 모드) */
+    }
 
     /* Dark Mode */
-    @media (prefers-color-scheme: dark) {{
-        div[data-testid="stMarkdownContainer"] h3 {{
+    @media (prefers-color-scheme: dark) {
+        div[data-testid="stMarkdownContainer"] h3 {
             background-color: #2e2e2e !important;
             color: #ffffff !important;
-        }}
-        .day-header span {{
-            color: #ffffff !important; /* 평일 흰색 (다크 모드) */
-        }}
-    }}
+        }
+        .day-header span {
+            color: #ffffff !important; /* 기본 흰색 (다크 모드) */
+        }
+    }
 
-    /* 요일 헤더 스타일 */
-    .day-header span {{
-        font-size: 1.1em !important;
-        text-align: center !important;
-        display: block !important;
-        width: 100% !important;
+    /* 요일 헤더 스타일 (일/토: 빨강, 월~금: 라이트 검정/다크 흰색) */
+    .day-header {
+        width: 100%;
+        text-align: center;
         font-weight: bold;
         padding: 5px 0;
-    }}
-    .day-header:nth-child(1) span {{ color: red !important; }} /* 일요일 빨강 */
-    .day-header:nth-child(7) span {{ color: blue !important; }} /* 토요일 파랑 */
-    .day-header:nth-child(2) span,
-    .day-header:nth-child(3) span,
-    .day-header:nth-child(4) span,
-    .day-header:nth-child(5) span,
-    .day-header:nth-child(6) span {{ 
-        color: #000000 !important; /* 평일 검정색 (라이트 모드) */
-    }}
-    @media (prefers-color-scheme: dark) {{
-        .day-header:nth-child(2) span,
-        .day-header:nth-child(3) span,
-        .day-header:nth-child(4) span,
-        .day-header:nth-child(5) span,
-        .day-header:nth-child(6) span {{ 
-            color: #ffffff !important; /* 평일 흰색 (다크 모드) */
-        }}
-    }}
+    }
+    .day-header span {
+        font-size: 1.1em !important;
+        display: block;
+        width: 100%;
+    }
+    .day-header:nth-child(1) span { color: red !important; } /* 일요일 */
+    .day-header:nth-child(7) span { color: red !important; } /* 토요일 */
+    .day-header:nth-child(2) span { color: #000000 !important; } /* 월요일 */
+    .day-header:nth-child(3) span { color: #000000 !important; } /* 화요일 */
+    .day-header:nth-child(4) span { color: #000000 !important; } /* 수요일 */
+    .day-header:nth-child(5) span { color: #000000 !important; } /* 목요일 */
+    .day-header:nth-child(6) span { color: #000000 !important; } /* 금요일 */
+    @media (prefers-color-scheme: dark) {
+        .day-header:nth-child(2) span { color: #ffffff !important; }
+        .day-header:nth-child(3) span { color: #ffffff !important; }
+        .day-header:nth-child(4) span { color: #ffffff !important; }
+        .day-header:nth-child(5) span { color: #ffffff !important; }
+        .day-header:nth-child(6) span { color: #ffffff !important; }
+    }
 
-    /* 커스텀 날짜 박스 스타일 (정렬 보정) */
-    .calendar-day-box {{
-        width: 40px; /* 두 자리 숫자 수용 */
+    /* 날짜 컨테이너 스타일 (숫자 위, 버튼 아래) */
+    .calendar-day-container {
+        position: relative;
+        width: 40px;
+        height: 60px; /* 숫자와 버튼 공간 포함 */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+    }
+
+    /* 커스텀 날짜 박스 스타일 (위쪽에 위치) */
+    .calendar-day-box {
+        width: 40px;
         height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 0;
-        margin: 0;
         border: 1px solid #ddd;
         background-color: #ffffff;
-        cursor: pointer;
-        transition: all 0.1s ease;
         border-radius: 50%;
         font-size: 1.1em;
         color: #000000;
         box-sizing: border-box;
         user-select: none;
-    }}
-    @media (prefers-color-scheme: dark) {{
-        .calendar-day-box {{
+        white-space: nowrap; /* 두 자리 날짜 줄바꿈 방지 */
+        margin: 0;
+        padding: 0;
+    }
+    @media (prefers-color-scheme: dark) {
+        .calendar-day-box {
             border: 1px solid #444;
             background-color: #1e1e1e;
             color: #ffffff;
-        }}
-    }}
+        }
+    }
 
     /* 호버 시 효과 */
-    .calendar-day-box:hover {{
+    .calendar-day-box:hover {
         background-color: #e0e0e0;
         border-color: #bbb;
-    }}
-    @media (prefers-color-scheme: dark) {{
-        .calendar-day-box:hover {{
+    }
+    @media (prefers-color-scheme: dark) {
+        .calendar-day-box:hover {
             background-color: #2a2a2a;
             border-color: #666;
-        }}
-    }}
+        }
+    }
 
     /* 오늘 날짜 스타일 (선택되지 않았을 때) */
-    .calendar-day-box.current-day:not(.selected-day) {{
+    .calendar-day-box.current-day:not(.selected-day) {
         border: 2px solid blue !important;
-    }}
+    }
 
-    /* 선택된 날짜 스타일 (원형 배경) */
-    .calendar-day-box.selected-day {{
+    /* 선택된 날짜 스타일 */
+    .calendar-day-box.selected-day {
         background-color: #4CAF50 !important;
         color: #ffffff !important;
         border: 2px solid #4CAF50 !important;
         font-weight: bold;
-    }}
+    }
 
     /* 비활성화된 날짜 스타일 */
-    .calendar-day-box.disabled-day {{
+    .calendar-day-box.disabled-day {
         border: 1px solid #555;
         background-color: #e0e0e0;
         color: #666;
         cursor: not-allowed;
-    }}
-    @media (prefers-color-scheme: dark) {{
-        .calendar-day-box.disabled-day {{
+    }
+    @media (prefers-color-scheme: dark) {
+        .calendar-day-box.disabled-day {
             background-color: #2e2e2e;
             border: 1px solid #444;
             color: #666;
-        }}
-    }}
+        }
+    }
 
-    /* Streamlit st.columns 스타일 (정렬 보정) */
-    div[data-testid="stHorizontalBlock"] > div:first-child {{
-        max-width: 280px; /* 40px x 7 = 280px로 7열 고정 */
+    /* 선택 표시 (동그라미) */
+    .selection-mark {
+        position: absolute;
+        top: 2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #4CAF50;
+        border: 1px solid #ffffff;
+        display: none;
+    }
+    .selected-day .selection-mark {
+        display: block;
+    }
+
+    /* 버튼 스타일 (아래쪽에 위치) */
+    button[data-testid="stButton"] {
+        position: absolute;
+        bottom: 0;
+        width: 40px;
+        height: 20px;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        cursor: pointer;
+        opacity: 0; /* 버튼을 투명하게 만들어 숫자 위로 보이지 않게 함 */
+    }
+    button[data-testid="stButton"]:hover {
+        opacity: 0.1; /* 호버 시 약간의 피드백 */
+    }
+
+    /* Streamlit st.columns 스타일 (데스크톱) */
+    div[data-testid="stHorizontalBlock"] > div:first-child {
+        max-width: 280px; /* 40px x 7 */
         margin: 0 auto;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0px;
-        padding: 0 !important; /* 기본 패딩 제거 */
-    }}
-    div[data-testid="stHorizontalBlock"] > div:nth-child(n+2) {{
+        display: grid;
+        grid-template-columns: repeat(7, 40px);
+        justify-content: flex-start; /* 왼쪽 정렬 */
+        gap: 0;
+        padding: 0 !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(n+2) {
         max-width: 280px;
         margin: 0 auto 10px auto;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0px;
-        padding: 0 !important; /* 기본 패딩 제거 */
-    }}
-    div[data-testid="stHorizontalBlock"] > div > div {{
-        flex-grow: 0;
-        flex-shrink: 0;
-        flex-basis: calc(100% / 7); /* 7등분 */
-        min-width: 40px; /* 날짜 박스 크기와 일치 */
-        max-width: 40px; /* 날짜 박스 크기와 일치 */
+        display: grid;
+        grid-template-columns: repeat(7, 40px);
+        justify-content: flex-start;
+        gap: 0;
+        padding: 0 !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div > div {
+        width: 40px;
         padding: 0 !important;
         margin: 0 !important;
         box-sizing: border-box;
         display: flex;
         justify-content: center;
         align-items: center;
-    }}
+    }
 
-    /* 모바일 반응형 조절 */
-    @media (max-width: 600px) {{
-        div[data-testid="stHorizontalBlock"] > div {{
-            max-width: 100%;
-        }}
-        div[data-testid="stHorizontalBlock"] > div > div {{
-            flex-basis: calc(100% / 7);
-            min-width: 35px;
-            max-width: 35px;
-        }}
-        .calendar-day-box {{
+    /* 모바일 반응형 조절 (7열 고정) */
+    @media (max-width: 600px) {
+        div[data-testid="stHorizontalBlock"] > div {
+            max-width: 245px !important; /* 35px x 7 */
+            width: 245px !important;
+            display: grid !important;
+            grid-template-columns: repeat(7, 35px) !important;
+            justify-content: flex-start !important;
+            gap: 0 !important;
+            padding: 0 !important;
+            margin: 0 auto !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div > div {
+            width: 35px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .calendar-day-container {
+            width: 35px;
+            height: 55px; /* 숫자와 버튼 공간 포함 */
+        }
+        .calendar-day-box {
             width: 35px;
             height: 35px;
             font-size: 0.9em;
-        }}
-        button[data-testid="stButton"] p {{
-            font-size: 0.9em !important;
-        }}
-        .day-header span {{
+        }
+        button[data-testid="stButton"] {
+            width: 35px;
+            height: 20px;
+        }
+        .selection-mark {
+            width: 10px;
+            height: 10px;
+            top: 2px;
+        }
+        .day-header span {
             font-size: 0.8em !important;
-        }}
-    }}
+        }
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -258,9 +295,9 @@ def render_calendar_interactive(apply_date):
         else:
             selected_dates.add(date_obj)
         st.session_state.selected_dates = selected_dates
-        st.rerun()
+        st.experimental_rerun()  # Streamlit의 권장 방식 사용
 
-    # 각 월별 달력 렌der링
+    # 각 월별 달력 렌더링
     for year, month in months_to_display:
         st.markdown(f"<h3>{year}년 {month}월</h3>", unsafe_allow_html=True)
         cal = calendar.monthcalendar(year, month)
@@ -270,36 +307,50 @@ def render_calendar_interactive(apply_date):
         cols = st.columns(7, gap="small")
         for i, day_name in enumerate(days_of_week_korean):
             with cols[i]:
-                st.markdown(f'<div class="day-header"><span><strong>{day_name}</strong></span></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="day-header"><span>{day_name}</span></div>', unsafe_allow_html=True)
 
         # 달력 날짜 박스 생성 (apply_date 이후 날짜 제외)
-        for week_idx, week in enumerate(cal):
+        for week in cal:
             cols = st.columns(7, gap="small")
             for i, day in enumerate(week):
                 with cols[i]:
                     if day == 0:
-                        st.empty()
-                    else:
-                        date_obj = date(year, month, day)
-                        if date_obj > apply_date:
-                            st.markdown(f'<div class="calendar-day-box disabled-day">{day}</div>', unsafe_allow_html=True)
-                            continue
+                        st.markdown('<div class="calendar-day-container"></div>', unsafe_allow_html=True)
+                        continue
 
-                        is_selected = date_obj in selected_dates
-                        is_current = date_obj == current_date
+                    date_obj = date(year, month, day)
+                    if date_obj > apply_date:
+                        st.markdown(
+                            f'<div class="calendar-day-container">'
+                            f'<div class="calendar-day-box disabled-day">{day}</div>'
+                            f'<button data-testid="stButton" style="display: none;"></button>'
+                            f'</div>',
+                            unsafe_allow_html=True
+                        )
+                        continue
 
-                        # 버튼으로 클릭 이벤트 처리
-                        button_key = f"date_{date_obj.isoformat()}_week_{week_idx}"
-                        if st.button(str(day), key=button_key):
-                            toggle_date(date_obj)
+                    is_selected = date_obj in selected_dates
+                    is_current = date_obj == current_date
 
-                        # 선택 상태에 따라 스타일링
-                        class_name = "calendar-day-box"
-                        if is_selected:
-                            class_name += " selected-day"
-                        if is_current:
-                            class_name += " current-day"
-                        st.markdown(f'<div class="{class_name}">{day}</div>', unsafe_allow_html=True)
+                    # 날짜 컨테이너와 선택 표시
+                    class_name = "calendar-day-box"
+                    if is_selected:
+                        class_name += " selected-day"
+                    if is_current:
+                        class_name += " current-day"
+
+                    # 날짜 클릭 이벤트 처리
+                    container_key = f"date_{date_obj.isoformat()}_week_{week.index(day)}"
+                    st.markdown(
+                        f'<div class="calendar-day-container">'
+                        f'<div class="selection-mark"></div>'
+                        f'<div class="{class_name}">{day}</div>'
+                        f'<button data-testid="stButton" key="{container_key}" onClick="window.parent.window.dispatchEvent(new Event(\'button_click_{container_key}\'));"></button>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+                    if st.button("", key=container_key, on_click=toggle_date, args=(date_obj,), use_container_width=True):
+                        pass
 
     # 현재 선택된 근무일자 목록 표시
     if st.session_state.selected_dates:
