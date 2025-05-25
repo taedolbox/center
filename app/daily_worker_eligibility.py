@@ -8,8 +8,8 @@ import calendar
 # 달력의 시작 요일을 일요일로 설정
 calendar.setfirstweekday(calendar.SUNDAY)
 
-# 현재 날짜와 시간 (2025년 5월 26일 오전 6:45 KST)
-current_datetime = datetime(2025, 5, 26, 6, 45)
+# 현재 날짜와 시간 (2025년 5월 26일 오전 6:29 KST)
+current_datetime = datetime(2025, 5, 26, 6, 29)
 current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오전 %I:%M KST')
 
 def get_date_range(apply_date):
@@ -47,13 +47,15 @@ def render_calendar_interactive(apply_date):
             cols = st.columns(7, gap="small")
             for i, day_name in enumerate(days_of_week_korean):
                 with cols[i]:
+                    color = "red" if i == 0 or i == 6 else "#000000"
                     st.markdown(
-                        f'<div class="day-header"><span>{day_name}</span></div>',
+                        f'<div class="day-header"><span style="color: {color}">{day_name}</span></div>',
                         unsafe_allow_html=True
                     )
 
-            # 달력 렌더링 (7열 강제)
+            # 달력 렌더링 (CSS와 함께 7열 강제)
             for week in cal:
+                # 각 주를 7열로 나누기 위해 st.columns 사용
                 cols = st.columns(7, gap="small")
                 for i, day in enumerate(week):
                     with cols[i]:
@@ -61,7 +63,7 @@ def render_calendar_interactive(apply_date):
                             st.markdown('<div class="calendar-day-container"></div>', unsafe_allow_html=True)
                             continue
                         date_obj = date(year, month, day)
-                        if date_obj > current_date or (date_obj.month < apply_date.month and date_obj.year <= apply_date.year):
+                        if date_obj > apply_date:
                             st.markdown(
                                 f'<div class="calendar-day-container">'
                                 f'<div class="calendar-day-box disabled-day">{day}</div>'
@@ -173,7 +175,7 @@ def daily_worker_eligibility_app():
             future_date = apply_date + timedelta(days=i)
             date_range_future_objects, _ = get_date_range(future_date)
             total_days_future = len(date_range_future_objects)
-            threshold_future = total_days_future / 0
+            threshold_future = total_days_future / 3
             worked_days_future = sum(1 for d in selected_dates if d <= future_date)
 
             if worked_days_future < threshold_future:
