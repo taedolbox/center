@@ -66,13 +66,14 @@
 }
 
 .calendar-container {
-    display: grid;
-    grid-template-columns: repeat(7, 40px);
-    gap: 0;
-    padding: 0;
-    margin: 0 auto;
-    min-width: 280px; /* 7열(40px * 7 = 280px)을 보장 */
-    max-width: 280px;
+    display: grid !important; /* 우선순위 높이기 */
+    grid-template-columns: repeat(7, 40px) !important; /* 7열 강제 */
+    gap: 0 !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    min-width: 280px !important; /* 7열(40px * 7 = 280px)을 보장 */
+    max-width: 280px !important;
+    background-color: #f0f0f0; /* 디버깅용 배경색 추가 */
 }
 
 .calendar-day-container {
@@ -84,6 +85,7 @@
     align-items: center;
     justify-content: space-between;
     box-sizing: border-box;
+    background-color: #ffffff; /* 디버깅용 배경색 추가 */
 }
 
 .calendar-day-box {
@@ -183,19 +185,21 @@ button[data-testid="stButton"]:hover {
 }
 
 /* 모바일 달력 스타일 */
-@media (max-width: 500px) { /* 768px에서 500px로 조정 */
+@media (max-width: 500px) {
     .calendar-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        padding: 0;
-        margin: 0;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background-color: #e0e0e0; /* 디버깅용 배경색 */
     }
     .calendar-day-container {
         width: 50px;
         height: 50px;
         margin: 5px 0;
+        background-color: #ffffff; /* 디버깅용 배경색 */
     }
     .calendar-day-box {
         width: 50px;
