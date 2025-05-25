@@ -1,8 +1,6 @@
-/* static/styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
 
-/* @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
-
-/* 기존 스타일 
+/* 기존 스타일 */
 .stButton>button {
     background-color: #4CAF50;
     color: white;
@@ -23,7 +21,7 @@
 .sidebar .sidebar-content {
     background-color: #f8f9fa;
 }
-*/
+
 /* 달력 전용 스타일 */
 .calendar-wrapper {
     display: flex;
@@ -67,7 +65,7 @@
 
 .calendar-container {
     display: grid !important; /* 우선순위 높이기 */
-    grid-template-columns: repeat(7, 40px) !important; /* 7열 강제 */
+    grid-template-columns: repeat(7, 40px) !important; /* 7열 * 40px = 280px */
     gap: 0 !important;
     padding: 0 !important;
     margin: 0 auto !important;
@@ -78,14 +76,14 @@
 
 .calendar-day-container {
     position: relative;
-    width: 40px;
-    height: 60px;
+    width: 40px; /* 수정: 버튼과 날짜 박스 크기 동기화 */
+    height: 40px; /* 수정: .calendar-day-box와 동일한 높이로 설정 */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center; /* 수정: 버튼과 숫자 중앙 정렬 */
     box-sizing: border-box;
-    background-color: #ffffff; /* 디버깅용 배경색 추가 */
+    background-color: #ffffff;
 }
 
 .calendar-day-box {
@@ -168,10 +166,14 @@
 }
 
 button[data-testid="stButton"] {
+    width: 40px !important; /* 수정: .calendar-day-box와 동일한 너비 */
+    height: 40px !important; /* 수정: .calendar-day-box와 동일한 높이 */
+    min-width: 0 !important; /* 수정: Streamlit 기본 최소 크기 제거 */
+    min-height: 0 !important; /* 수정: Streamlit 기본 최소 크기 제거 */
     position: absolute;
-    bottom: 0;
-    width: 40px;
-    height: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 수정: 버튼을 숫자 박스 중앙에 정렬 */
     background: none !important;
     border: none !important;
     padding: 0 !important;
@@ -196,10 +198,10 @@ button[data-testid="stButton"]:hover {
         background-color: #e0e0e0; /* 디버깅용 배경색 */
     }
     .calendar-day-container {
-        width: 50px;
-        height: 50px;
+        width: 50px; /* 수정: 모바일에서도 버튼과 동일 크기 */
+        height: 50px; /* 수정: 모바일에서도 버튼과 동일 크기 */
         margin: 5px 0;
-        background-color: #ffffff; /* 디버깅용 배경색 */
+        background-color: #ffffff;
     }
     .calendar-day-box {
         width: 50px;
@@ -211,8 +213,14 @@ button[data-testid="stButton"]:hover {
         height: 10px;
     }
     button[data-testid="stButton"] {
-        width: 10px;
-        height: 50px;
+        width: 50px !important; /* 수정: 모바일에서 .calendar-day-box와 동일 */
+        height: 50px !important; /* 수정: 모바일에서 .calendar-day-box와 동일 */
+        min-width: 0 !important; /* 수정: Streamlit 기본 최소 크기 제거 */
+        min-height: 0 !important; /* 수정: Streamlit 기본 최소 크기 제거 */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* 수정: 중앙 정렬 */
     }
 }
 
