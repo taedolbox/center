@@ -30,6 +30,7 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
+    min-width: 300px; /* 최소 너비를 보장하여 7열 레이아웃 유지 */
     max-width: 300px;
     margin: 0 auto;
 }
@@ -70,6 +71,7 @@
     gap: 0;
     padding: 0;
     margin: 0 auto;
+    min-width: 280px; /* 7열(40px * 7 = 280px)을 보장 */
     max-width: 280px;
 }
 
@@ -181,7 +183,7 @@ button[data-testid="stButton"]:hover {
 }
 
 /* 모바일 달력 스타일 */
-@media (max-width: 768px) {
+@media (max-width: 500px) { /* 768px에서 500px로 조정 */
     .calendar-container {
         display: flex;
         flex-direction: column;
