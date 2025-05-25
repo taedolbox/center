@@ -223,7 +223,7 @@ def render_calendar_interactive(apply_date):
     }
 
     /* 모바일 반응형 조절 (7열 고정) */
-    @media (max-width: 500px) {
+    @media (max-width: 600px) {
         div[data-testid="stHorizontalBlock"] > div {
             max-width: 245px !important; /* 35px x 7 */
             width: 245px !important;
@@ -244,16 +244,16 @@ def render_calendar_interactive(apply_date):
             align-items: center !important;
         }
         .calendar-day-container {
-            width: 35px;
+            width: 40px;
             height: 55px; /* 숫자와 버튼 공간 포함 */
         }
         .calendar-day-box {
-            width: 35px;
-            height: 35px;
+            width: 30px;
+            height: 30px;
             font-size: 0.9em;
         }
         button[data-testid="stButton"] {
-            width: 35px;
+            width: 20px;
             height: 20px;
         }
         .selection-mark {
