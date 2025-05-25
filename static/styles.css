@@ -77,12 +77,18 @@
 .calendar-day-container {
     position: relative;
     width: 40px;
-    height: 40px; /* .calendar-day-box와 동일 */
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    background-color: #ffffff;
+    background-color: #ffffff; /* 라이트 모드 배경 */
+}
+
+@media (prefers-color-scheme: dark) {
+    .calendar-day-container {
+        background-color: #1e1e1e; /* 수정: 다크 모드에서 배경색 변경 */
+    }
 }
 
 .calendar-day-box {
@@ -167,19 +173,19 @@
 button[data-testid="stButton"] {
     width: 40px !important;
     height: 40px !important;
-    min-width: 0 !important; /* Streamlit 기본 최소 크기 제거 */
-    min-height: 0 !important; /* Streamlit 기본 최소 크기 제거 */
+    min-width: 0 !important;
+    min-height: 0 !important;
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* 중앙 정렬 */
+    transform: translate(-50%, -50%);
     background: none !important;
     border: none !important;
     padding: 0 !important;
     margin: 0 !important;
     cursor: pointer;
     opacity: 0;
-    box-sizing: border-box; /* 추가: 버튼 크기 정확히 유지 */
+    box-sizing: border-box;
 }
 
 button[data-testid="stButton"]:hover {
@@ -203,6 +209,11 @@ button[data-testid="stButton"]:hover {
         margin: 5px 0;
         background-color: #ffffff;
     }
+    @media (prefers-color-scheme: dark) {
+        .calendar-day-container {
+            background-color: #1e1e1e; /* 수정: 모바일 다크 모드 배경 */
+        }
+    }
     .calendar-day-box {
         width: 50px;
         height: 50px;
@@ -221,7 +232,7 @@ button[data-testid="stButton"]:hover {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        box-sizing: border-box; /* 추가: 버튼 크기 정확히 유지 */
+        box-sizing: border-box;
     }
 }
 
