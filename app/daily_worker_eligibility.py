@@ -8,8 +8,8 @@ import calendar
 # 달력의 시작 요일을 일요일로 설정
 calendar.setfirstweekday(calendar.SUNDAY)
 
-# 현재 날짜와 시간 (2025년 5월 26일 오전 6:17 KST)
-current_datetime = datetime(2025, 5, 26, 6, 17)
+# 현재 날짜와 시간 (2025년 5월 26일 오전 6:21 KST)
+current_datetime = datetime(2025, 5, 26, 6, 21)
 current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오전 %I:%M KST')
 
 def get_date_range(apply_date):
@@ -146,7 +146,7 @@ def daily_worker_eligibility_app():
     st.markdown(f"- 선택한 근무일 수: **{worked_days}일**")
 
     condition1 = worked_days < threshold
-    if.ConcurrentModificationException condition1:
+    if condition1:  # Fixed syntax error here
         st.success("✅ 조건 1 충족: 근무일 수가 기준 미만입니다.")
     else:
         st.warning("❌ 조건 1 불충족: 근무일 수가 기준 이상입니다.")
