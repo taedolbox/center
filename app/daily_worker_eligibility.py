@@ -8,8 +8,8 @@ import calendar
 # 달력의 시작 요일을 일요일로 설정
 calendar.setfirstweekday(calendar.SUNDAY)
 
-# 현재 날짜와 시간 (2025년 5월 26일 오전 6:21 KST)
-current_datetime = datetime(2025, 5, 26, 6, 21)
+# 현재 날짜와 시간 (2025년 5월 26일 오전 6:25 KST)
+current_datetime = datetime(2025, 5, 26, 6, 25)
 current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오전 %I:%M KST')
 
 def get_date_range(apply_date):
@@ -35,6 +35,7 @@ def render_calendar_interactive(apply_date):
 
     # 달력 전용 컨테이너
     with st.container():
+        # 달력을 가운데 정렬하되, 최소 너비를 보장
         st.markdown('<div class="calendar-wrapper">', unsafe_allow_html=True)
         # 각 월별 달력 렌더링
         for year, month in months_to_display:
@@ -42,7 +43,7 @@ def render_calendar_interactive(apply_date):
             cal = calendar.monthcalendar(year, month)
             days_of_week_korean = ["일", "월", "화", "수", "목", "금", "토"]
 
-            # 요일 헤더 생성
+            # 요일 헤더 생성 (7열 고정)
             cols = st.columns(7, gap="small")
             for i, day_name in enumerate(days_of_week_korean):
                 with cols[i]:
@@ -146,7 +147,7 @@ def daily_worker_eligibility_app():
     st.markdown(f"- 선택한 근무일 수: **{worked_days}일**")
 
     condition1 = worked_days < threshold
-    if condition1:  # Fixed syntax error here
+    if condition1:
         st.success("✅ 조건 1 충족: 근무일 수가 기준 미만입니다.")
     else:
         st.warning("❌ 조건 1 불충족: 근무일 수가 기준 이상입니다.")
