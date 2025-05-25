@@ -30,6 +30,7 @@ def render_calendar_interactive(apply_date):
         st.session_state.selected_dates = set()
     if 'rerun_trigger' not in st.session_state:
         st.session_state.rerun_trigger = False
+    # 기기 감지 로직 삭제로 인해 is_mobile, is_tablet 기본값 설정
     if 'is_mobile' not in st.session_state:
         st.session_state.is_mobile = False
     if 'is_tablet' not in st.session_state:
@@ -43,43 +44,8 @@ def render_calendar_interactive(apply_date):
     end_date_for_calendar = apply_date
     months_to_display = sorted(list(set((d.year, d.month) for d in pd.date_range(start=start_date_for_calendar, end=end_date_for_calendar))))
 
-    # 모바일 확대/축소 방지 뷰포트 설정 및 User-Agent 감지
-    st.markdown(
-        """
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <script>
-            window.addEventListener('load', function() {
-                const userAgent = navigator.userAgent.toLowerCase();
-                const isMobile = /mobile|android/.test(userAgent);
-                const isTablet = /tablet|ipad/.test(userAgent);
-                const deviceInfo = JSON.stringify({ isMobile: isMobile, isTablet: isTablet });
-                console.log('Device Info:', deviceInfo);  // 디버깅용
-                document.getElementById('device-type').value = deviceInfo;
-                document.getElementById('device-type-form').submit();
-            });
-        </script>
-        <form id="device-type-form" method="POST" action="#" style="display: none;">
-            <input id="device-type" name="device_type" type="hidden" value="">
-        </form>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # User-Agent 정보를 처리하기 위한 폼
-    with st.form(key='device_type_form'):
-        device_type = st.text_input("Device Type", value="", key="device_type")
-        submitted = st.form_submit_button("Submit Device Type")
-        if submitted and device_type:
-            try:
-                device_info = json.loads(device_type)
-                st.session_state.is_mobile = device_info.get("isMobile", False)
-                st.session_state.is_tablet = device_info.get("isTablet", False)
-                st.write(f"Device Detection: Mobile={st.session_state.is_mobile}, Tablet={st.session_state.is_tablet}")  # 디버깅용
-                st.rerun()
-            except json.JSONDecodeError:
-                st.error("Failed to parse device type information.")
-
     # 사용자 정의 CSS 주입
+    # 기기 감지 관련 메타 태그 및 스크립트 삭제
     st.markdown("""
     <style>
     /* 기본 스타일: 모든 화면에서 중앙 정렬 */
@@ -332,6 +298,9 @@ def render_calendar_interactive(apply_date):
     </style>
     """, unsafe_allow_html=True)
 
+    # User-Agent 정보를 처리하기 위한 폼 삭제
+    # st.form(key='device_type_form') ... 부분 삭제
+
     # 토글 함수 정의 (st.rerun()을 콜백 외부에서 호출)
     def toggle_date(date_obj):
         if date_obj in selected_dates:
@@ -348,100 +317,67 @@ def render_calendar_interactive(apply_date):
         days_of_week_korean = ["일", "월", "화", "수", "목", "금", "토"]
 
         # 요일 헤더 생성 (Python에서 색상 동적 삽입)
-        if not (st.session_state.is_mobile or st.session_state.is_tablet):
-            cols = st.columns(7, gap="small")
-            for i, day_name in enumerate(days_of_week_korean):
-                with cols[i]:
-                    # 일요일(0) 또는 토요일(6)은 빨강, 월~금은 라이트 모드 검정/다크 모드 흰색
-                    if i == 0 or i == 6:
-                        color = "red"
-                    else:
-                        color = "#000000"  # 라이트 모드 기본 검정
-                    st.markdown(
-                        f'<div class="day-header"><span style="color: {color}">{day_name}</span></div>',
-                        unsafe_allow_html=True
-                    )
+        # 기기 감지 로직 삭제로 인해 조건문 변경 또는 제거 필요
+        # 현재는 is_mobile, is_tablet 기본값이 False이므로 PC 레이아웃으로 가정하고 요일 헤더 표시
+        cols = st.columns(7, gap="small")
+        for i, day_name in enumerate(days_of_week_korean):
+            with cols[i]:
+                # 일요일(0) 또는 토요일(6)은 빨강, 월~금은 라이트 모드 검정/다크 모드 흰색
+                if i == 0 or i == 6:
+                    color = "red"
+                else:
+                    color = "#000000"  # 라이트 모드 기본 검정
+                st.markdown(
+                    f'<div class="day-header"><span style="color: {color}">{day_name}</span></div>',
+                    unsafe_allow_html=True
+                )
 
         # PC와 모바일에 따라 달력 렌더링 분기
-        if st.session_state.is_mobile or st.session_state.is_tablet:
-            # 모바일/태블릿: 1열 수직 스크롤 달력
-            for week in cal:
-                for day in week:
-                    if day == 0:
-                        continue
-                    date_obj = date(year, month, day)
-                    if date_obj > apply_date:
-                        st.markdown(
-                            f'<div class="calendar-container-mobile">'
-                            f'<div class="calendar-day-container-mobile">'
-                            f'<div class="calendar-day-box-mobile disabled-day">{day}</div>'
-                            f'<button data-testid="stButton" style="display: none;"></button>'
-                            f'</div>'
-                            f'</div>',
-                            unsafe_allow_html=True
-                        )
-                        continue
+        # 기기 감지 로직 삭제로 인해 is_mobile, is_tablet 기본값에 따라 하나의 레이아웃만 렌더링되거나,
+        # 반응형 CSS에 의존하게 됩니다. 여기서는 임시로 PC 레이아웃만 렌더링하도록 변경합니다.
+        # 만약 모바일/태블릿 레이아웃이 필요하다면, User-Agent 감지 외의 다른 방법 (예: 커스텀 컴포넌트)을 사용해야 합니다.
+        # st.session_state.is_mobile 또는 st.session_state.is_tablet 변수를 사용할 경우,
+        # 이 변수들의 초기값 (False)에 따라 PC 레이아웃이 기본으로 렌더링됩니다.
+        # 따라서 @media (max-width: 600px) CSS 쿼리를 통해 모바일 환경에서만 스타일이 적용됩니다.
 
-                    is_selected = date_obj in selected_dates
-                    is_current = date_obj == current_date
-                    class_name = "calendar-day-box-mobile"
-                    if is_selected:
-                        class_name += " selected-day"
-                    if is_current:
-                        class_name += " current-day"
-
-                    container_key = f"date_{date_obj.isoformat()}_mobile"
-                    st.markdown(
-                        f'<div class="calendar-container-mobile">'
-                        f'<div class="calendar-day-container-mobile">'
-                        f'<div class="selection-mark-mobile"></div>'
-                        f'<div class="{class_name}">{day}</div>'
-                        f'<button data-testid="stButton" key="{container_key}" onClick="window.parent.window.dispatchEvent(new Event(\'button_click_{container_key}\'));"></button>'
-                        f'</div>'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
-                    if st.button("", key=container_key, on_click=toggle_date, args=(date_obj,), use_container_width=True):
-                        pass
-        else:
-            # PC: 7열 달력
-            st.markdown('<div class="calendar-container-pc">', unsafe_allow_html=True)
-            for week in cal:
-                for day in week:
-                    if day == 0:
-                        st.markdown('<div class="calendar-day-container-pc"></div>', unsafe_allow_html=True)
-                        continue
-                    date_obj = date(year, month, day)
-                    if date_obj > apply_date:
-                        st.markdown(
-                            f'<div class="calendar-day-container-pc">'
-                            f'<div class="calendar-day-box-pc disabled-day">{day}</div>'
-                            f'<button data-testid="stButton" style="display: none;"></button>'
-                            f'</div>',
-                            unsafe_allow_html=True
-                        )
-                        continue
-
-                    is_selected = date_obj in selected_dates
-                    is_current = date_obj == current_date
-                    class_name = "calendar-day-box-pc"
-                    if is_selected:
-                        class_name += " selected-day"
-                    if is_current:
-                        class_name += " current-day"
-
-                    container_key = f"date_{date_obj.isoformat()}_pc"
+        # PC: 7열 달력 (기본 렌더링)
+        st.markdown('<div class="calendar-container-pc">', unsafe_allow_html=True)
+        for week in cal:
+            for day in week:
+                if day == 0:
+                    st.markdown('<div class="calendar-day-container-pc"></div>', unsafe_allow_html=True)
+                    continue
+                date_obj = date(year, month, day)
+                if date_obj > apply_date:
                     st.markdown(
                         f'<div class="calendar-day-container-pc">'
-                        f'<div class="selection-mark-pc"></div>'
-                        f'<div class="{class_name}">{day}</div>'
-                        f'<button data-testid="stButton" key="{container_key}" onClick="window.parent.window.dispatchEvent(new Event(\'button_click_{container_key}\'));"></button>'
+                        f'<div class="calendar-day-box-pc disabled-day">{day}</div>'
+                        f'<button data-testid="stButton" style="display: none;"></button>'
                         f'</div>',
                         unsafe_allow_html=True
                     )
-                    if st.button("", key=container_key, on_click=toggle_date, args=(date_obj,), use_container_width=True):
-                        pass
-            st.markdown('</div>', unsafe_allow_html=True)
+                    continue
+
+                is_selected = date_obj in selected_dates
+                is_current = date_obj == current_date
+                class_name = "calendar-day-box-pc"
+                if is_selected:
+                    class_name += " selected-day"
+                if is_current:
+                    class_name += " current-day"
+
+                container_key = f"date_{date_obj.isoformat()}_pc"
+                st.markdown(
+                    f'<div class="calendar-day-container-pc">'
+                    f'<div class="selection-mark-pc"></div>'
+                    f'<div class="{class_name}">{day}</div>'
+                    f'<button data-testid="stButton" key="{container_key}" onClick="window.parent.window.dispatchEvent(new Event(\'button_click_{container_key}\'));"></button>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+                if st.button("", key=container_key, on_click=toggle_date, args=(date_obj,), use_container_width=True):
+                    pass
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # rerun_trigger 확인 및 페이지 새로고침
     if st.session_state.rerun_trigger:
