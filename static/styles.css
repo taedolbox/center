@@ -63,6 +63,33 @@
     font-size: 1.1em;
     display: block;
     width: 100%;
+    color: #000000; /* 기본 색상 */
+}
+
+/* 요일별 색상 설정 */
+.day-header:nth-child(1) span, .day-header:nth-child(7) span {
+    color: #ff0000; /* 일요일과 토요일은 빨간색 */
+}
+
+.day-header:nth-child(2) span, .day-header:nth-child(3) span, 
+.day-header:nth-child(4) span, .day-header:nth-child(5) span, 
+.day-header:nth-child(6) span {
+    color: #000000; /* 월~금은 검정색 (라이트모드) */
+}
+
+/* 다크모드에서 요일 색상 */
+@media (prefers-color-scheme: dark) {
+    .day-header span {
+        color: #ffffff; /* 기본적으로 흰색 */
+    }
+    .day-header:nth-child(1) span, .day-header:nth-child(7) span {
+        color: #ff0000 !important; /* 일요일과 토요일은 빨간색 */
+    }
+    .day-header:nth-child(2) span, .day-header:nth-child(3) span, 
+    .day-header:nth-child(4) span, .day-header:nth-child(5) span, 
+    .day-header:nth-child(6) span {
+        color: #ffffff !important; /* 월~금은 흰색 */
+    }
 }
 
 .calendar-container {
@@ -78,8 +105,8 @@
 
 .calendar-day-container {
     position: relative;
-    width: 40px;
-    height: 60px;
+    width: 40px !important;
+    height: 60px !important;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -88,9 +115,15 @@
     background-color: #ffffff;
 }
 
+@media (prefers-color-scheme: dark) {
+    .calendar-day-container {
+        background-color: #1e1e1e !important; /* 다크모드 배경 */
+    }
+}
+
 .calendar-day-box {
-    width: 40px;
-    height: 40px;
+    width: 40px !important;
+    height: 40px !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -109,7 +142,7 @@
 @media (prefers-color-scheme: dark) {
     .calendar-day-box {
         border: 1px solid #444;
-        background-color: #1e1e1e;
+        background-color: #1e1e1e !important; /* 다크모드에서 숫자 배경 어두운 색 */
         color: #ffffff;
     }
 }
@@ -131,10 +164,14 @@
 }
 
 .calendar-day-box.selected-day {
+    width: 40px !important;
+    height: 40px !important;
     background-color: #4CAF50 !important;
     color: #ffffff !important;
     border: 2px solid #4CAF50 !important;
+    border-radius: 50% !important;
     font-weight: bold;
+    box-sizing: border-box !important;
 }
 
 .calendar-day-box.disabled-day {
@@ -170,8 +207,8 @@
 button[data-testid="stButton"] {
     position: absolute;
     bottom: 0;
-    width: 40px !important; /* 숫자 원과 동일한 가로 크기 */
-    height: 40px !important; /* 숫자 원과 동일한 세로 크기 */
+    width: 40px !important; /* 고정된 크기 */
+    height: 40px !important;
     background: none !important;
     border: none !important;
     padding: 0 !important;
@@ -196,14 +233,19 @@ button[data-testid="stButton"]:hover {
         background-color: #e0e0e0;
     }
     .calendar-day-container {
-        width: 50px;
-        height: 50px;
+        width: 50px !important;
+        height: 50px !important;
         margin: 5px 0;
         background-color: #ffffff;
     }
+    @media (prefers-color-scheme: dark) {
+        .calendar-day-container {
+            background-color: #1e1e1e !important;
+        }
+    }
     .calendar-day-box {
-        width: 50px;
-        height: 50px;
+        width: 50px !important;
+        height: 50px !important;
         font-size: 1em;
     }
     .selection-mark {
@@ -211,7 +253,7 @@ button[data-testid="stButton"]:hover {
         height: 10px;
     }
     button[data-testid="stButton"] {
-        width: 50px !important; /* 모바일에서도 숫자 원과 동일한 크기 */
+        width: 50px !important; /* 모바일에서도 고정된 크기 */
         height: 50px !important;
     }
 }
