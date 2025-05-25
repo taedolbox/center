@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
+/*@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
 
-/* 기존 스타일 */
+/* 기존 스타일 
 .stButton>button {
     background-color: #4CAF50;
     color: white;
@@ -20,7 +20,7 @@
 
 .sidebar .sidebar-content {
     background-color: #f8f9fa;
-}
+}*/
 
 /* 달력 전용 스타일 */
 .calendar-wrapper {
