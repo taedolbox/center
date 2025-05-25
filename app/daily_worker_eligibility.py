@@ -3,12 +3,13 @@ import pandas as pd
 from app.questions import get_daily_worker_eligibility_questions
 from datetime import datetime, timedelta, date
 import calendar
+import json
 
 # 달력의 시작 요일을 일요일로 설정
 calendar.setfirstweekday(calendar.SUNDAY)
 
-# 현재 날짜와 시간을 기반으로 KST 오후 XX:XX 형식을 생성 (2025년 5월 25일 오후 12:08 KST)
-current_datetime = datetime(2025, 5, 25, 12, 8)  # 2025년 5월 25일 오후 12:08 KST
+# 현재 날짜와 시간을 기반으로 KST 오후 XX:XX 형식을 생성 (2025년 5월 25일 오후 1:08 KST)
+current_datetime = datetime(2025, 5, 25, 13, 8)  # 2025년 5월 25일 오후 1:08 KST
 current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오후 %I:%M KST')
 
 def get_date_range(apply_date):
@@ -22,13 +23,17 @@ def get_date_range(apply_date):
 def render_calendar_interactive(apply_date):
     """
     달력을 렌더링하고 날짜 선택 기능을 제공합니다.
-    선택된 날짜 바로 위에 동그라미를 표시하며, 모바일 기기에 맞게 조정합니다.
+    PC와 모바일에 따라 최적화된 레이아웃을 제공합니다.
     """
     # 초기 세션 상태 설정
     if 'selected_dates' not in st.session_state:
         st.session_state.selected_dates = set()
     if 'rerun_trigger' not in st.session_state:
         st.session_state.rerun_trigger = False
+    if 'is_mobile' not in st.session_state:
+        st.session_state.is_mobile = False
+    if 'is_tablet' not in st.session_state:
+        st.session_state.is_tablet = False
 
     selected_dates = st.session_state.selected_dates
     current_date = current_datetime.date()  # 2025년 5월 25일
@@ -38,11 +43,47 @@ def render_calendar_interactive(apply_date):
     end_date_for_calendar = apply_date
     months_to_display = sorted(list(set((d.year, d.month) for d in pd.date_range(start=start_date_for_calendar, end=end_date_for_calendar))))
 
+    # 모바일 확대/축소 방지 뷰포트 설정 및 User-Agent 감지
+    st.markdown(
+        """
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <script>
+            window.addEventListener('load', function() {
+                const userAgent = navigator.userAgent.toLowerCase();
+                const isMobile = /mobile|android/.test(userAgent);
+                const isTablet = /tablet|ipad/.test(userAgent);
+                const deviceInfo = JSON.stringify({ isMobile: isMobile, isTablet: isTablet });
+                console.log('Device Info:', deviceInfo);  // 디버깅용
+                document.getElementById('device-type').value = deviceInfo;
+                document.getElementById('device-type-form').submit();
+            });
+        </script>
+        <form id="device-type-form" method="POST" action="#" style="display: none;">
+            <input id="device-type" name="device_type" type="hidden" value="">
+        </form>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # User-Agent 정보를 처리하기 위한 폼
+    with st.form(key='device_type_form'):
+        device_type = st.text_input("Device Type", value="", key="device_type")
+        submitted = st.form_submit_button("Submit Device Type")
+        if submitted and device_type:
+            try:
+                device_info = json.loads(device_type)
+                st.session_state.is_mobile = device_info.get("isMobile", False)
+                st.session_state.is_tablet = device_info.get("isTablet", False)
+                st.write(f"Device Detection: Mobile={st.session_state.is_mobile}, Tablet={st.session_state.is_tablet}")  # 디버깅용
+                st.rerun()
+            except json.JSONDecodeError:
+                st.error("Failed to parse device type information.")
+
     # 사용자 정의 CSS 주입
     st.markdown("""
     <style>
-    /* 달력 전체 컨테이너 정렬 (왼쪽 여백 제거 및 중앙 정렬) */
-    div[data-testid="stVerticalBlock"] > div > div > div[data-testid="stHorizontalBlock"] {
+    /* 기본 스타일: 모든 화면에서 중앙 정렬 */
+    div[data-testid="stVerticalBlock"] > div > div > div {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
@@ -83,20 +124,26 @@ def render_calendar_interactive(apply_date):
         width: 100%;
     }
 
-    /* 날짜 컨테이너 스타일 (숫자 위, 버튼 아래) */
-    .calendar-day-container {
+    /* PC 달력 스타일 (7열) */
+    .calendar-container-pc {
+        display: grid !important;
+        grid-template-columns: repeat(7, 40px) !important;
+        gap: 0 !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+        max-width: 280px !important;
+    }
+    .calendar-day-container-pc {
         position: relative;
         width: 40px;
-        height: 60px; /* 숫자와 버튼 공간 포함 */
+        height: 60px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
         box-sizing: border-box;
     }
-
-    /* 커스텀 날짜 박스 스타일 (위쪽에 위치) */
-    .calendar-day-box {
+    .calendar-day-box-pc {
         width: 40px;
         height: 40px;
         display: flex;
@@ -109,60 +156,50 @@ def render_calendar_interactive(apply_date):
         color: #000000;
         box-sizing: border-box;
         user-select: none;
-        white-space: nowrap; /* 두 자리 날짜 줄바꿈 방지 */
+        white-space: nowrap;
         margin: 0;
         padding: 0;
     }
     @media (prefers-color-scheme: dark) {
-        .calendar-day-box {
+        .calendar-day-box-pc {
             border: 1px solid #444;
             background-color: #1e1e1e;
             color: #ffffff;
         }
     }
-
-    /* 호버 시 효과 */
-    .calendar-day-box:hover {
+    .calendar-day-box-pc:hover {
         background-color: #e0e0e0;
         border-color: #bbb;
     }
     @media (prefers-color-scheme: dark) {
-        .calendar-day-box:hover {
+        .calendar-day-box-pc:hover {
             background-color: #2a2a2a;
             border-color: #666;
         }
     }
-
-    /* 오늘 날짜 스타일 (선택되지 않았을 때) */
-    .calendar-day-box.current-day:not(.selected-day) {
+    .calendar-day-box-pc.current-day:not(.selected-day) {
         border: 2px solid blue !important;
     }
-
-    /* 선택된 날짜 스타일 */
-    .calendar-day-box.selected-day {
+    .calendar-day-box-pc.selected-day {
         background-color: #4CAF50 !important;
         color: #ffffff !important;
         border: 2px solid #4CAF50 !important;
         font-weight: bold;
     }
-
-    /* 비활성화된 날짜 스타일 */
-    .calendar-day-box.disabled-day {
+    .calendar-day-box-pc.disabled-day {
         border: 1px solid #555;
         background-color: #e0e0e0;
         color: #666;
         cursor: not-allowed;
     }
     @media (prefers-color-scheme: dark) {
-        .calendar-day-box.disabled-day {
+        .calendar-day-box-pc.disabled-day {
             background-color: #2e2e2e;
             border: 1px solid #444;
             color: #666;
         }
     }
-
-    /* 선택 표시 (동그라미) */
-    .selection-mark {
+    .selection-mark-pc {
         position: absolute;
         top: 2px;
         width: 12px;
@@ -172,11 +209,9 @@ def render_calendar_interactive(apply_date):
         border: 1px solid #ffffff;
         display: none;
     }
-    .selected-day .selection-mark {
+    .selected-day .selection-mark-pc {
         display: block;
     }
-
-    /* 버튼 스타일 (아래쪽에 위치) */
     button[data-testid="stButton"] {
         position: absolute;
         bottom: 0;
@@ -187,83 +222,112 @@ def render_calendar_interactive(apply_date):
         padding: 0 !important;
         margin: 0 !important;
         cursor: pointer;
-        opacity: 0; /* 버튼을 투명하게 */
+        opacity: 0;
     }
     button[data-testid="stButton"]:hover {
-        opacity: 0.1; /* 호버 시 약간의 피드백 */
+        opacity: 0.1;
     }
 
-    /* Streamlit st.columns 스타일 (데스크톱) */
-    div[data-testid="stHorizontalBlock"] > div:first-child {
-        max-width: 280px; /* 40px x 7 */
-        margin: 0 auto;
-        display: grid !important;
-        grid-template-columns: repeat(7, 40px) !important;
-        justify-content: flex-start !important;
-        gap: 0 !important;
-        padding: 0 !important;
-    }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(n+2) {
-        max-width: 280px;
-        margin: 0 auto 10px auto;
-        display: grid !important;
-        grid-template-columns: repeat(7, 40px) !important;
-        justify-content: flex-start !important;
-        gap: 0 !important;
-        padding: 0 !important;
-    }
-    div[data-testid="stHorizontalBlock"] > div > div {
-        width: 40px;
-        padding: 0 !important;
-        margin: 0 !important;
-        box-sizing: border-box;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-    }
-
-    /* 모바일 반응형 조절 (7열 고정) */
+    /* 모바일 달력 스타일 (1열, 원형 버튼) */
     @media (max-width: 600px) {
-        div[data-testid="stHorizontalBlock"] > div {
-            max-width: 245px !important; /* 35px x 7 */
-            width: 245px !important;
-            display: grid !important;
-            grid-template-columns: repeat(7, 35px) !important;
-            justify-content: flex-start !important;
-            gap: 0 !important;
-            padding: 0 !important;
-            margin: 0 auto !important;
-        }
-        div[data-testid="stHorizontalBlock"] > div > div {
-            width: 35px !important;
+        .calendar-container-mobile {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            width: 100% !important;
             padding: 0 !important;
             margin: 0 !important;
+        }
+        .calendar-day-container-mobile {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px 0;
+        }
+        .calendar-day-box-mobile {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            background-color: #ffffff;
+            border-radius: 50%;
+            font-size: 1em;
+            color: #000000;
             box-sizing: border-box;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
+            user-select: none;
+            white-space: nowrap;
+            cursor: pointer;
         }
-        .calendar-day-container {
-            width: 40px;
-            height: 55px; /* 숫자와 버튼 공간 포함 */
+        @media (prefers-color-scheme: dark) {
+            .calendar-day-box-mobile {
+                border: 1px solid #444;
+                background-color: #1e1e1e;
+                color: #ffffff;
+            }
         }
-        .calendar-day-box {
-            width: 30px;
-            height: 30px;
-            font-size: 0.9em;
+        .calendar-day-box-mobile:hover {
+            background-color: #e0e0e0;
+            border-color: #bbb;
         }
-        button[data-testid="stButton"] {
-            width: 20px;
-            height: 20px;
+        @media (prefers-color-scheme: dark) {
+            .calendar-day-box-mobile:hover {
+                background-color: #2a2a2a;
+                border-color: #666;
+            }
         }
-        .selection-mark {
+        .calendar-day-box-mobile.current-day:not(.selected-day) {
+            border: 2px solid blue !important;
+        }
+        .calendar-day-box-mobile.selected-day {
+            background-color: #4CAF50 !important;
+            color: #ffffff !important;
+            border: 2px solid #4CAF50 !important;
+            font-weight: bold;
+        }
+        .calendar-day-box-mobile.disabled-day {
+            border: 1px solid #555;
+            background-color: #e0e0e0;
+            color: #666;
+            cursor: not-allowed;
+        }
+        @media (prefers-color-scheme: dark) {
+            .calendar-day-box-mobile.disabled-day {
+                background-color: #2e2e2e;
+                border: 1px solid #444;
+                color: #666;
+            }
+        }
+        .selection-mark-mobile {
+            position: absolute;
+            top: 2px;
             width: 10px;
             height: 10px;
-            top: 2px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            border: 1px solid #ffffff;
+            display: none;
         }
-        .day-header span {
-            font-size: 0.8em !important;
+        .selected-day .selection-mark-mobile {
+            display: block;
         }
+        button[data-testid="stButton"] {
+            width: 50px;
+            height: 50px;
+            opacity: 0;
+        }
+        button[data-testid="stButton"]:hover {
+            opacity: 0.1;
+        }
+    }
+
+    /* 폼 버튼 숨김 */
+    button[data-testid="stFormSubmitButton"] {
+        display: none;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -284,33 +348,74 @@ def render_calendar_interactive(apply_date):
         days_of_week_korean = ["일", "월", "화", "수", "목", "금", "토"]
 
         # 요일 헤더 생성 (Python에서 색상 동적 삽입)
-        cols = st.columns(7, gap="small")
-        for i, day_name in enumerate(days_of_week_korean):
-            with cols[i]:
-                # 일요일(0) 또는 토요일(6)은 빨강, 월~금은 라이트 검정/다크 흰색
-                if i == 0 or i == 6:
-                    color = "red"
-                else:
-                    color = "#000000"  # 라이트 모드 기본 검정, 다크 모드 CSS에서 덮어씌움
-                st.markdown(
-                    f'<div class="day-header"><span style="color: {color}">{day_name}</span></div>',
-                    unsafe_allow_html=True
-                )
-
-        # 달력 날짜 박스 생성 (apply_date 이후 날짜 제외)
-        for week in cal:
+        if not (st.session_state.is_mobile or st.session_state.is_tablet):
             cols = st.columns(7, gap="small")
-            for i, day in enumerate(week):
+            for i, day_name in enumerate(days_of_week_korean):
                 with cols[i]:
-                    if day == 0:
-                        st.markdown('<div class="calendar-day-container"></div>', unsafe_allow_html=True)
-                        continue
+                    # 일요일(0) 또는 토요일(6)은 빨강, 월~금은 라이트 모드 검정/다크 모드 흰색
+                    if i == 0 or i == 6:
+                        color = "red"
+                    else:
+                        color = "#000000"  # 라이트 모드 기본 검정
+                    st.markdown(
+                        f'<div class="day-header"><span style="color: {color}">{day_name}</span></div>',
+                        unsafe_allow_html=True
+                    )
 
+        # PC와 모바일에 따라 달력 렌더링 분기
+        if st.session_state.is_mobile or st.session_state.is_tablet:
+            # 모바일/태블릿: 1열 수직 스크롤 달력
+            for week in cal:
+                for day in week:
+                    if day == 0:
+                        continue
                     date_obj = date(year, month, day)
                     if date_obj > apply_date:
                         st.markdown(
-                            f'<div class="calendar-day-container">'
-                            f'<div class="calendar-day-box disabled-day">{day}</div>'
+                            f'<div class="calendar-container-mobile">'
+                            f'<div class="calendar-day-container-mobile">'
+                            f'<div class="calendar-day-box-mobile disabled-day">{day}</div>'
+                            f'<button data-testid="stButton" style="display: none;"></button>'
+                            f'</div>'
+                            f'</div>',
+                            unsafe_allow_html=True
+                        )
+                        continue
+
+                    is_selected = date_obj in selected_dates
+                    is_current = date_obj == current_date
+                    class_name = "calendar-day-box-mobile"
+                    if is_selected:
+                        class_name += " selected-day"
+                    if is_current:
+                        class_name += " current-day"
+
+                    container_key = f"date_{date_obj.isoformat()}_mobile"
+                    st.markdown(
+                        f'<div class="calendar-container-mobile">'
+                        f'<div class="calendar-day-container-mobile">'
+                        f'<div class="selection-mark-mobile"></div>'
+                        f'<div class="{class_name}">{day}</div>'
+                        f'<button data-testid="stButton" key="{container_key}" onClick="window.parent.window.dispatchEvent(new Event(\'button_click_{container_key}\'));"></button>'
+                        f'</div>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+                    if st.button("", key=container_key, on_click=toggle_date, args=(date_obj,), use_container_width=True):
+                        pass
+        else:
+            # PC: 7열 달력
+            st.markdown('<div class="calendar-container-pc">', unsafe_allow_html=True)
+            for week in cal:
+                for day in week:
+                    if day == 0:
+                        st.markdown('<div class="calendar-day-container-pc"></div>', unsafe_allow_html=True)
+                        continue
+                    date_obj = date(year, month, day)
+                    if date_obj > apply_date:
+                        st.markdown(
+                            f'<div class="calendar-day-container-pc">'
+                            f'<div class="calendar-day-box-pc disabled-day">{day}</div>'
                             f'<button data-testid="stButton" style="display: none;"></button>'
                             f'</div>',
                             unsafe_allow_html=True
@@ -319,19 +424,16 @@ def render_calendar_interactive(apply_date):
 
                     is_selected = date_obj in selected_dates
                     is_current = date_obj == current_date
-
-                    # 날짜 컨테이너와 선택 표시
-                    class_name = "calendar-day-box"
+                    class_name = "calendar-day-box-pc"
                     if is_selected:
                         class_name += " selected-day"
                     if is_current:
                         class_name += " current-day"
 
-                    # 날짜 클릭 이벤트 처리
-                    container_key = f"date_{date_obj.isoformat()}_week_{week.index(day)}"
+                    container_key = f"date_{date_obj.isoformat()}_pc"
                     st.markdown(
-                        f'<div class="calendar-day-container">'
-                        f'<div class="selection-mark"></div>'
+                        f'<div class="calendar-day-container-pc">'
+                        f'<div class="selection-mark-pc"></div>'
                         f'<div class="{class_name}">{day}</div>'
                         f'<button data-testid="stButton" key="{container_key}" onClick="window.parent.window.dispatchEvent(new Event(\'button_click_{container_key}\'));"></button>'
                         f'</div>',
@@ -339,6 +441,7 @@ def render_calendar_interactive(apply_date):
                     )
                     if st.button("", key=container_key, on_click=toggle_date, args=(date_obj,), use_container_width=True):
                         pass
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # rerun_trigger 확인 및 페이지 새로고침
     if st.session_state.rerun_trigger:
@@ -375,12 +478,12 @@ def daily_worker_eligibility_app():
 
     st.markdown("---")
     st.markdown("#### ✅ 근무일 선택 달력")
-    selected_days = render_calendar_interactive(apply_date)
+    selected_dates = render_calendar_interactive(apply_date)  # 반환값을 selected_dates로 저장
     st.markdown("---")
 
     # 조건 1 계산 및 표시
     total_days = len(date_range_objects)
-    worked_days = len(selected_days)
+    worked_days = len(selected_dates)
     threshold = total_days / 3
 
     st.markdown(f"- 총 기간 일수: **{total_days}일**")
@@ -398,7 +501,7 @@ def daily_worker_eligibility_app():
     fourteen_days_prior_end = apply_date - timedelta(days=1)
     fourteen_days_prior_start = fourteen_days_prior_end - timedelta(days=13)
     fourteen_days_prior_range = [d.date() for d in pd.date_range(start=fourteen_days_prior_start, end=fourteen_days_prior_end)]
-    no_work_14_days = all(day not in selected_days for day in fourteen_days_prior_range)
+    no_work_14_days = all(day not in selected_dates for day in fourteen_days_prior_range)
     condition2 = no_work_14_days
 
     if no_work_14_days:
@@ -417,7 +520,7 @@ def daily_worker_eligibility_app():
             date_range_future_objects, _ = get_date_range(future_date)
             total_days_future = len(date_range_future_objects)
             threshold_future = total_days_future / 3
-            worked_days_future = sum(1 for d in selected_days if d <= future_date)
+            worked_days_future = sum(1 for d in selected_dates if d <= future_date)
 
             if worked_days_future < threshold_future:
                 st.info(f"✅ **{future_date.strftime('%Y-%m-%d')}** 이후에 신청하면 요건을 충족할 수 있습니다.")
@@ -429,7 +532,7 @@ def daily_worker_eligibility_app():
     # 조건 2 불충족 시 미래 신청일 제안 (건설일용근로자 기준)
     if not condition2:
         st.markdown("### 📅 조건 2를 충족하려면 언제 신청해야 할까요?")
-        last_worked_day = max((d for d in selected_days if d < apply_date), default=None)
+        last_worked_day = max((d for d in selected_dates if d < apply_date), default=None)
         if last_worked_day:
             suggested_date = last_worked_day + timedelta(days=15)
             st.info(f"✅ **{suggested_date.strftime('%Y-%m-%d')}** 이후에 신청하면 조건 2를 충족할 수 있습니다.")
@@ -456,4 +559,3 @@ def daily_worker_eligibility_app():
 
 if __name__ == "__main__":
     daily_worker_eligibility_app()
-    
