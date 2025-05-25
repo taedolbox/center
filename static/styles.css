@@ -1,5 +1,8 @@
+/* static/styles.css */
+
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
 
+/* 기존 스타일 */
 .stButton>button {
     background-color: #4CAF50;
     color: white;
@@ -7,13 +10,207 @@
     padding: 10px 20px;
     font-size: 16px;
 }
+
 .stRadio>label {
     font-size: 16px;
     color: #333;
 }
+
 .stMarkdown, .stSuccess, .stWarning {
     font-family: 'Nanum Gothic', sans-serif;
 }
+
 .sidebar .sidebar-content {
     background-color: #f8f9fa;
+}
+
+/* 달력 전용 스타일 */
+.calendar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.calendar-wrapper h3 {
+    background-color: #f0f0f0;
+    color: #000000;
+    text-align: center;
+    padding: 8px 0;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+    .calendar-wrapper h3 {
+        background-color: #2e2e2e;
+        color: #ffffff;
+    }
+}
+
+.day-header {
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    padding: 5px 0;
+}
+
+.day-header span {
+    font-size: 1.1em;
+    display: block;
+    width: 100%;
+}
+
+.calendar-container {
+    display: grid;
+    grid-template-columns: repeat(7, 40px);
+    gap: 0;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 280px;
+}
+
+.calendar-day-container {
+    position: relative;
+    width: 40px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.calendar-day-box {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    background-color: #ffffff;
+    border-radius: 50%;
+    font-size: 1.1em;
+    color: #000000;
+    box-sizing: border-box;
+    user-select: none;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+    .calendar-day-box {
+        border: 1px solid #444;
+        background-color: #1e1e1e;
+        color: #ffffff;
+    }
+}
+
+.calendar-day-box:hover {
+    background-color: #e0e0e0;
+    border-color: #bbb;
+}
+
+@media (prefers-color-scheme: dark) {
+    .calendar-day-box:hover {
+        background-color: #2a2a2a;
+        border-color: #666;
+    }
+}
+
+.calendar-day-box.current-day:not(.selected-day) {
+    border: 2px solid blue !important;
+}
+
+.calendar-day-box.selected-day {
+    background-color: #4CAF50 !important;
+    color: #ffffff !important;
+    border: 2px solid #4CAF50 !important;
+    font-weight: bold;
+}
+
+.calendar-day-box.disabled-day {
+    border: 1px solid #555;
+    background-color: #e0e0e0;
+    color: #666;
+    cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+    .calendar-day-box.disabled-day {
+        background-color: #2e2e2e;
+        border: 1px solid #444;
+        color: #666;
+    }
+}
+
+.selection-mark {
+    position: absolute;
+    top: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    border: 1px solid #ffffff;
+    display: none;
+}
+
+.selected-day .selection-mark {
+    display: block;
+}
+
+button[data-testid="stButton"] {
+    position: absolute;
+    bottom: 0;
+    width: 40px;
+    height: 20px;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer;
+    opacity: 0;
+}
+
+button[data-testid="stButton"]:hover {
+    opacity: 0.1;
+}
+
+/* 모바일 달력 스타일 */
+@media (max-width: 768px) {
+    .calendar-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    .calendar-day-container {
+        width: 50px;
+        height: 50px;
+        margin: 5px 0;
+    }
+    .calendar-day-box {
+        width: 50px;
+        height: 50px;
+        font-size: 1em;
+    }
+    .selection-mark {
+        width: 10px;
+        height: 10px;
+    }
+    button[data-testid="stButton"] {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* 폼 버튼 숨김 */
+button[data-testid="stFormSubmitButton"] {
+    display: none;
 }
