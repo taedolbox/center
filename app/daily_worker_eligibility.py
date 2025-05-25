@@ -7,8 +7,8 @@ import calendar
 # 달력의 시작 요일을 일요일로 설정
 calendar.setfirstweekday(calendar.SUNDAY)
 
-# 현재 날짜와 시간을 기반으로 KST 오후 XX:XX 형식을 생성 (2025년 5월 25일 오후 12:03 KST)
-current_datetime = datetime(2025, 5, 25, 12, 3)  # 2025년 5월 25일 오후 12:03 KST
+# 현재 날짜와 시간을 기반으로 KST 오후 XX:XX 형식을 생성 (2025년 5월 25일 오후 12:08 KST)
+current_datetime = datetime(2025, 5, 25, 12, 8)  # 2025년 5월 25일 오후 12:08 KST
 current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오후 %I:%M KST')
 
 def get_date_range(apply_date):
@@ -27,6 +27,8 @@ def render_calendar_interactive(apply_date):
     # 초기 세션 상태 설정
     if 'selected_dates' not in st.session_state:
         st.session_state.selected_dates = set()
+    if 'rerun_trigger' not in st.session_state:
+        st.session_state.rerun_trigger = False
 
     selected_dates = st.session_state.selected_dates
     current_date = current_datetime.date()  # 2025년 5월 25일
@@ -41,10 +43,10 @@ def render_calendar_interactive(apply_date):
     <style>
     /* 달력 전체 컨테이너 정렬 (왼쪽 여백 제거 및 중앙 정렬) */
     div[data-testid="stVerticalBlock"] > div > div > div[data-testid="stHorizontalBlock"] {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
         margin-left: 0 !important;
         padding-left: 0 !important;
     }
@@ -60,23 +62,15 @@ def render_calendar_interactive(apply_date):
         width: 100%;
     }
 
-    /* Light Mode */
-    .day-header span {
-        color: #000000 !important; /* 기본 검정색 (라이트 모드) */
-    }
-
-    /* Dark Mode */
+    /* 다크 모드 헤더 스타일 */
     @media (prefers-color-scheme: dark) {
         div[data-testid="stMarkdownContainer"] h3 {
             background-color: #2e2e2e !important;
             color: #ffffff !important;
         }
-        .day-header span {
-            color: #ffffff !important; /* 기본 흰색 (다크 모드) */
-        }
     }
 
-    /* 요일 헤더 스타일 (일/토: 빨강, 월~금: 라이트 검정/다크 흰색) */
+    /* 요일 헤더 스타일 */
     .day-header {
         width: 100%;
         text-align: center;
@@ -87,20 +81,6 @@ def render_calendar_interactive(apply_date):
         font-size: 1.1em !important;
         display: block;
         width: 100%;
-    }
-    .day-header:nth-child(1) span { color: red !important; } /* 일요일 */
-    .day-header:nth-child(7) span { color: red !important; } /* 토요일 */
-    .day-header:nth-child(2) span { color: #000000 !important; } /* 월요일 */
-    .day-header:nth-child(3) span { color: #000000 !important; } /* 화요일 */
-    .day-header:nth-child(4) span { color: #000000 !important; } /* 수요일 */
-    .day-header:nth-child(5) span { color: #000000 !important; } /* 목요일 */
-    .day-header:nth-child(6) span { color: #000000 !important; } /* 금요일 */
-    @media (prefers-color-scheme: dark) {
-        .day-header:nth-child(2) span { color: #ffffff !important; }
-        .day-header:nth-child(3) span { color: #ffffff !important; }
-        .day-header:nth-child(4) span { color: #ffffff !important; }
-        .day-header:nth-child(5) span { color: #ffffff !important; }
-        .day-header:nth-child(6) span { color: #ffffff !important; }
     }
 
     /* 날짜 컨테이너 스타일 (숫자 위, 버튼 아래) */
@@ -207,7 +187,7 @@ def render_calendar_interactive(apply_date):
         padding: 0 !important;
         margin: 0 !important;
         cursor: pointer;
-        opacity: 0; /* 버튼을 투명하게 만들어 숫자 위로 보이지 않게 함 */
+        opacity: 0; /* 버튼을 투명하게 */
     }
     button[data-testid="stButton"]:hover {
         opacity: 0.1; /* 호버 시 약간의 피드백 */
@@ -217,19 +197,19 @@ def render_calendar_interactive(apply_date):
     div[data-testid="stHorizontalBlock"] > div:first-child {
         max-width: 280px; /* 40px x 7 */
         margin: 0 auto;
-        display: grid;
-        grid-template-columns: repeat(7, 40px);
-        justify-content: flex-start; /* 왼쪽 정렬 */
-        gap: 0;
+        display: grid !important;
+        grid-template-columns: repeat(7, 40px) !important;
+        justify-content: flex-start !important;
+        gap: 0 !important;
         padding: 0 !important;
     }
     div[data-testid="stHorizontalBlock"] > div:nth-child(n+2) {
         max-width: 280px;
         margin: 0 auto 10px auto;
-        display: grid;
-        grid-template-columns: repeat(7, 40px);
-        justify-content: flex-start;
-        gap: 0;
+        display: grid !important;
+        grid-template-columns: repeat(7, 40px) !important;
+        justify-content: flex-start !important;
+        gap: 0 !important;
         padding: 0 !important;
     }
     div[data-testid="stHorizontalBlock"] > div > div {
@@ -237,9 +217,9 @@ def render_calendar_interactive(apply_date):
         padding: 0 !important;
         margin: 0 !important;
         box-sizing: border-box;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
 
     /* 모바일 반응형 조절 (7열 고정) */
@@ -259,9 +239,9 @@ def render_calendar_interactive(apply_date):
             padding: 0 !important;
             margin: 0 !important;
             box-sizing: border-box;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
         }
         .calendar-day-container {
             width: 35px;
@@ -288,14 +268,14 @@ def render_calendar_interactive(apply_date):
     </style>
     """, unsafe_allow_html=True)
 
-    # 토글 함수 정의
+    # 토글 함수 정의 (st.rerun()을 콜백 외부에서 호출)
     def toggle_date(date_obj):
         if date_obj in selected_dates:
             selected_dates.remove(date_obj)
         else:
             selected_dates.add(date_obj)
         st.session_state.selected_dates = selected_dates
-        st.experimental_rerun()  # Streamlit의 권장 방식 사용
+        st.session_state.rerun_trigger = True  # 트리거 설정
 
     # 각 월별 달력 렌더링
     for year, month in months_to_display:
@@ -303,11 +283,19 @@ def render_calendar_interactive(apply_date):
         cal = calendar.monthcalendar(year, month)
         days_of_week_korean = ["일", "월", "화", "수", "목", "금", "토"]
 
-        # 요일 헤더 생성 (st.columns 사용)
+        # 요일 헤더 생성 (Python에서 색상 동적 삽입)
         cols = st.columns(7, gap="small")
         for i, day_name in enumerate(days_of_week_korean):
             with cols[i]:
-                st.markdown(f'<div class="day-header"><span>{day_name}</span></div>', unsafe_allow_html=True)
+                # 일요일(0) 또는 토요일(6)은 빨강, 월~금은 라이트 검정/다크 흰색
+                if i == 0 or i == 6:
+                    color = "red"
+                else:
+                    color = "#000000"  # 라이트 모드 기본 검정, 다크 모드 CSS에서 덮어씌움
+                st.markdown(
+                    f'<div class="day-header"><span style="color: {color}">{day_name}</span></div>',
+                    unsafe_allow_html=True
+                )
 
         # 달력 날짜 박스 생성 (apply_date 이후 날짜 제외)
         for week in cal:
@@ -351,6 +339,11 @@ def render_calendar_interactive(apply_date):
                     )
                     if st.button("", key=container_key, on_click=toggle_date, args=(date_obj,), use_container_width=True):
                         pass
+
+    # rerun_trigger 확인 및 페이지 새로고침
+    if st.session_state.rerun_trigger:
+        st.session_state.rerun_trigger = False
+        st.rerun()  # 콜백 외부에서 호출
 
     # 현재 선택된 근무일자 목록 표시
     if st.session_state.selected_dates:
@@ -463,3 +456,4 @@ def daily_worker_eligibility_app():
 
 if __name__ == "__main__":
     daily_worker_eligibility_app()
+    
