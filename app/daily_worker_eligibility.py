@@ -223,7 +223,7 @@ def render_calendar_interactive(apply_date):
     }
 
     /* 모바일 반응형 조절 (7열 고정) */
-    @media (max-width: 600px) {
+    @media (max-width: 900px) {
         div[data-testid="stHorizontalBlock"] > div {
             max-width: 245px !important; /* 35px x 7 */
             width: 245px !important;
