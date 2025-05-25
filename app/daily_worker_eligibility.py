@@ -8,8 +8,8 @@ import calendar
 # 달력의 시작 요일을 일요일로 설정
 calendar.setfirstweekday(calendar.SUNDAY)
 
-# 현재 날짜와 시간 (2025년 5월 26일 오전 6:25 KST)
-current_datetime = datetime(2025, 5, 26, 6, 25)
+# 현재 날짜와 시간 (2025년 5월 26일 오전 6:29 KST)
+current_datetime = datetime(2025, 5, 26, 6, 29)
 current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오전 %I:%M KST')
 
 def get_date_range(apply_date):
@@ -53,44 +53,45 @@ def render_calendar_interactive(apply_date):
                         unsafe_allow_html=True
                     )
 
-            # 달력 렌더링
-            st.markdown('<div class="calendar-container">', unsafe_allow_html=True)
+            # 달력 렌더링 (CSS와 함께 7열 강제)
             for week in cal:
-                for day in week:
-                    if day == 0:
-                        st.markdown('<div class="calendar-day-container"></div>', unsafe_allow_html=True)
-                        continue
-                    date_obj = date(year, month, day)
-                    if date_obj > apply_date:
+                # 각 주를 7열로 나누기 위해 st.columns 사용
+                cols = st.columns(7, gap="small")
+                for i, day in enumerate(week):
+                    with cols[i]:
+                        if day == 0:
+                            st.markdown('<div class="calendar-day-container"></div>', unsafe_allow_html=True)
+                            continue
+                        date_obj = date(year, month, day)
+                        if date_obj > apply_date:
+                            st.markdown(
+                                f'<div class="calendar-day-container">'
+                                f'<div class="calendar-day-box disabled-day">{day}</div>'
+                                f'<button data-testid="stButton" style="display: none;"></button>'
+                                f'</div>',
+                                unsafe_allow_html=True
+                            )
+                            continue
+
+                        is_selected = date_obj in selected_dates
+                        is_current = date_obj == current_date
+                        class_name = "calendar-day-box"
+                        if is_selected:
+                            class_name += " selected-day"
+                        if is_current:
+                            class_name += " current-day"
+
+                        container_key = f"date_{date_obj.isoformat()}"
                         st.markdown(
                             f'<div class="calendar-day-container">'
-                            f'<div class="calendar-day-box disabled-day">{day}</div>'
-                            f'<button data-testid="stButton" style="display: none;"></button>'
+                            f'<div class="selection-mark"></div>'
+                            f'<div class="{class_name}">{day}</div>'
+                            f'<button data-testid="stButton" key="{container_key}" onClick="window.parent.window.dispatchEvent(new Event(\'button_click_{container_key}\'));"></button>'
                             f'</div>',
                             unsafe_allow_html=True
                         )
-                        continue
-
-                    is_selected = date_obj in selected_dates
-                    is_current = date_obj == current_date
-                    class_name = "calendar-day-box"
-                    if is_selected:
-                        class_name += " selected-day"
-                    if is_current:
-                        class_name += " current-day"
-
-                    container_key = f"date_{date_obj.isoformat()}"
-                    st.markdown(
-                        f'<div class="calendar-day-container">'
-                        f'<div class="selection-mark"></div>'
-                        f'<div class="{class_name}">{day}</div>'
-                        f'<button data-testid="stButton" key="{container_key}" onClick="window.parent.window.dispatchEvent(new Event(\'button_click_{container_key}\'));"></button>'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
-                    if st.button("", key=container_key, on_click=toggle_date, args=(date_obj,), use_container_width=True):
-                        pass
-            st.markdown('</div>', unsafe_allow_html=True)
+                        if st.button("", key=container_key, on_click=toggle_date, args=(date_obj,), use_container_width=True):
+                            pass
         st.markdown('</div>', unsafe_allow_html=True)
 
     # rerun_trigger 확인 및 페이지 새로고침
