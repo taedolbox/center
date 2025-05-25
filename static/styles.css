@@ -185,7 +185,7 @@ button[data-testid="stButton"]:hover {
 }
 
 /* 모바일 달력 스타일 */
-@media (max-width: 500px) {
+@media (max-width: 900px) {
     .calendar-container {
         display: flex !important;
         flex-direction: column !important;
@@ -211,7 +211,7 @@ button[data-testid="stButton"]:hover {
         height: 10px;
     }
     button[data-testid="stButton"] {
-        width: 50px;
+        width: 10px;
         height: 50px;
     }
 }
