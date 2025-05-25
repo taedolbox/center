@@ -1,16 +1,14 @@
 import streamlit as st
 import pandas as pd
-from app.questions import get_daily_worker_eligibility_questions
 from datetime import datetime, timedelta, date
 import calendar
-import json
 
 # 달력의 시작 요일을 일요일로 설정
 calendar.setfirstweekday(calendar.SUNDAY)
 
-# 현재 날짜와 시간을 기반으로 KST 오후 XX:XX 형식을 생성 (2025년 5월 25일 오후 1:08 KST)
-current_datetime = datetime(2025, 5, 25, 13, 8)  # 2025년 5월 25일 오후 1:08 KST
-current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오후 %I:%M KST')
+# 현재 날짜와 시간 (2025년 5월 26일 오전 5:56 KST)
+current_datetime = datetime(2025, 5, 26, 5, 56)
+current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오전 %I:%M KST')
 
 def get_date_range(apply_date):
     """
@@ -23,29 +21,23 @@ def get_date_range(apply_date):
 def render_calendar_interactive(apply_date):
     """
     달력을 렌더링하고 날짜 선택 기능을 제공합니다.
-    PC와 모바일에 따라 최적화된 레이아웃을 제공합니다.
+    화면 크기에 따라 반응형 CSS로 PC/모바일 레이아웃을 제공합니다.
     """
     # 초기 세션 상태 설정
     if 'selected_dates' not in st.session_state:
         st.session_state.selected_dates = set()
     if 'rerun_trigger' not in st.session_state:
         st.session_state.rerun_trigger = False
-    # 기기 감지 로직 삭제로 인해 is_mobile, is_tablet 기본값 설정
-    if 'is_mobile' not in st.session_state:
-        st.session_state.is_mobile = False
-    if 'is_tablet' not in st.session_state:
-        st.session_state.is_tablet = False
 
     selected_dates = st.session_state.selected_dates
-    current_date = current_datetime.date()  # 2025년 5월 25일
+    current_date = current_datetime.date()  # 2025년 5월 26일
 
-    # 달력 표시할 월 범위 계산 (apply_date까지 표시)
+    # 달력 표시할 월 범위 계산
     start_date_for_calendar = (apply_date.replace(day=1) - pd.DateOffset(months=1)).replace(day=1).date()
     end_date_for_calendar = apply_date
     months_to_display = sorted(list(set((d.year, d.month) for d in pd.date_range(start=start_date_for_calendar, end=end_date_for_calendar))))
 
     # 사용자 정의 CSS 주입
-    # 기기 감지 관련 메타 태그 및 스크립트 삭제
     st.markdown("""
     <style>
     /* 기본 스타일: 모든 화면에서 중앙 정렬 */
@@ -90,8 +82,8 @@ def render_calendar_interactive(apply_date):
         width: 100%;
     }
 
-    /* PC 달력 스타일 (7열) */
-    .calendar-container-pc {
+    /* PC 달력 스타일 (7열, 기본 레이아웃) */
+    .calendar-container {
         display: grid !important;
         grid-template-columns: repeat(7, 40px) !important;
         gap: 0 !important;
@@ -99,7 +91,7 @@ def render_calendar_interactive(apply_date):
         margin: 0 auto !important;
         max-width: 280px !important;
     }
-    .calendar-day-container-pc {
+    .calendar-day-container {
         position: relative;
         width: 40px;
         height: 60px;
@@ -109,7 +101,7 @@ def render_calendar_interactive(apply_date):
         justify-content: space-between;
         box-sizing: border-box;
     }
-    .calendar-day-box-pc {
+    .calendar-day-box {
         width: 40px;
         height: 40px;
         display: flex;
@@ -127,45 +119,45 @@ def render_calendar_interactive(apply_date):
         padding: 0;
     }
     @media (prefers-color-scheme: dark) {
-        .calendar-day-box-pc {
+        .calendar-day-box {
             border: 1px solid #444;
             background-color: #1e1e1e;
             color: #ffffff;
         }
     }
-    .calendar-day-box-pc:hover {
+    .calendar-day-box:hover {
         background-color: #e0e0e0;
         border-color: #bbb;
     }
     @media (prefers-color-scheme: dark) {
-        .calendar-day-box-pc:hover {
+        .calendar-day-box:hover {
             background-color: #2a2a2a;
             border-color: #666;
         }
     }
-    .calendar-day-box-pc.current-day:not(.selected-day) {
+    .calendar-day-box.current-day:not(.selected-day) {
         border: 2px solid blue !important;
     }
-    .calendar-day-box-pc.selected-day {
+    .calendar-day-box.selected-day {
         background-color: #4CAF50 !important;
         color: #ffffff !important;
         border: 2px solid #4CAF50 !important;
         font-weight: bold;
     }
-    .calendar-day-box-pc.disabled-day {
+    .calendar-day-box.disabled-day {
         border: 1px solid #555;
         background-color: #e0e0e0;
         color: #666;
         cursor: not-allowed;
     }
     @media (prefers-color-scheme: dark) {
-        .calendar-day-box-pc.disabled-day {
+        .calendar-day-box.disabled-day {
             background-color: #2e2e2e;
             border: 1px solid #444;
             color: #666;
         }
     }
-    .selection-mark-pc {
+    .selection-mark {
         position: absolute;
         top: 2px;
         width: 12px;
@@ -175,7 +167,7 @@ def render_calendar_interactive(apply_date):
         border: 1px solid #ffffff;
         display: none;
     }
-    .selected-day .selection-mark-pc {
+    .selected-day .selection-mark {
         display: block;
     }
     button[data-testid="stButton"] {
@@ -196,7 +188,7 @@ def render_calendar_interactive(apply_date):
 
     /* 모바일 달력 스타일 (1열, 원형 버튼) */
     @media (max-width: 600px) {
-        .calendar-container-mobile {
+        .calendar-container {
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
@@ -204,7 +196,7 @@ def render_calendar_interactive(apply_date):
             padding: 0 !important;
             margin: 0 !important;
         }
-        .calendar-day-container-mobile {
+        .calendar-day-container {
             position: relative;
             width: 50px;
             height: 50px;
@@ -213,7 +205,7 @@ def render_calendar_interactive(apply_date):
             justify-content: center;
             margin: 5px 0;
         }
-        .calendar-day-box-mobile {
+        .calendar-day-box {
             width: 50px;
             height: 50px;
             display: flex;
@@ -230,45 +222,45 @@ def render_calendar_interactive(apply_date):
             cursor: pointer;
         }
         @media (prefers-color-scheme: dark) {
-            .calendar-day-box-mobile {
+            .calendar-day-box {
                 border: 1px solid #444;
                 background-color: #1e1e1e;
                 color: #ffffff;
             }
         }
-        .calendar-day-box-mobile:hover {
+        .calendar-day-box:hover {
             background-color: #e0e0e0;
             border-color: #bbb;
         }
         @media (prefers-color-scheme: dark) {
-            .calendar-day-box-mobile:hover {
+            .calendar-day-box:hover {
                 background-color: #2a2a2a;
                 border-color: #666;
             }
         }
-        .calendar-day-box-mobile.current-day:not(.selected-day) {
+        .calendar-day-box.current-day:not(.selected-day) {
             border: 2px solid blue !important;
         }
-        .calendar-day-box-mobile.selected-day {
+        .calendar-day-box.selected-day {
             background-color: #4CAF50 !important;
             color: #ffffff !important;
             border: 2px solid #4CAF50 !important;
             font-weight: bold;
         }
-        .calendar-day-box-mobile.disabled-day {
+        .calendar-day-box.disabled-day {
             border: 1px solid #555;
             background-color: #e0e0e0;
             color: #666;
             cursor: not-allowed;
         }
         @media (prefers-color-scheme: dark) {
-            .calendar-day-box-mobile.disabled-day {
+            .calendar-day-box.disabled-day {
                 background-color: #2e2e2e;
                 border: 1px solid #444;
                 color: #666;
             }
         }
-        .selection-mark-mobile {
+        .selection-mark {
             position: absolute;
             top: 2px;
             width: 10px;
@@ -278,7 +270,7 @@ def render_calendar_interactive(apply_date):
             border: 1px solid #ffffff;
             display: none;
         }
-        .selected-day .selection-mark-mobile {
+        .selected-day .selection-mark {
             display: block;
         }
         button[data-testid="stButton"] {
@@ -298,10 +290,7 @@ def render_calendar_interactive(apply_date):
     </style>
     """, unsafe_allow_html=True)
 
-    # User-Agent 정보를 처리하기 위한 폼 삭제
-    # st.form(key='device_type_form') ... 부분 삭제
-
-    # 토글 함수 정의 (st.rerun()을 콜백 외부에서 호출)
+    # 토글 함수 정의
     def toggle_date(date_obj):
         if date_obj in selected_dates:
             selected_dates.remove(date_obj)
@@ -316,42 +305,28 @@ def render_calendar_interactive(apply_date):
         cal = calendar.monthcalendar(year, month)
         days_of_week_korean = ["일", "월", "화", "수", "목", "금", "토"]
 
-        # 요일 헤더 생성 (Python에서 색상 동적 삽입)
-        # 기기 감지 로직 삭제로 인해 조건문 변경 또는 제거 필요
-        # 현재는 is_mobile, is_tablet 기본값이 False이므로 PC 레이아웃으로 가정하고 요일 헤더 표시
+        # 요일 헤더 생성
         cols = st.columns(7, gap="small")
         for i, day_name in enumerate(days_of_week_korean):
             with cols[i]:
-                # 일요일(0) 또는 토요일(6)은 빨강, 월~금은 라이트 모드 검정/다크 모드 흰색
-                if i == 0 or i == 6:
-                    color = "red"
-                else:
-                    color = "#000000"  # 라이트 모드 기본 검정
+                color = "red" if i == 0 or i == 6 else "#000000"
                 st.markdown(
                     f'<div class="day-header"><span style="color: {color}">{day_name}</span></div>',
                     unsafe_allow_html=True
                 )
 
-        # PC와 모바일에 따라 달력 렌더링 분기
-        # 기기 감지 로직 삭제로 인해 is_mobile, is_tablet 기본값에 따라 하나의 레이아웃만 렌더링되거나,
-        # 반응형 CSS에 의존하게 됩니다. 여기서는 임시로 PC 레이아웃만 렌더링하도록 변경합니다.
-        # 만약 모바일/태블릿 레이아웃이 필요하다면, User-Agent 감지 외의 다른 방법 (예: 커스텀 컴포넌트)을 사용해야 합니다.
-        # st.session_state.is_mobile 또는 st.session_state.is_tablet 변수를 사용할 경우,
-        # 이 변수들의 초기값 (False)에 따라 PC 레이아웃이 기본으로 렌더링됩니다.
-        # 따라서 @media (max-width: 600px) CSS 쿼리를 통해 모바일 환경에서만 스타일이 적용됩니다.
-
-        # PC: 7열 달력 (기본 렌더링)
-        st.markdown('<div class="calendar-container-pc">', unsafe_allow_html=True)
+        # 달력 렌더링 (반응형 CSS로 PC/모바일 자동 조정)
+        st.markdown('<div class="calendar-container">', unsafe_allow_html=True)
         for week in cal:
             for day in week:
                 if day == 0:
-                    st.markdown('<div class="calendar-day-container-pc"></div>', unsafe_allow_html=True)
+                    st.markdown('<div class="calendar-day-container"></div>', unsafe_allow_html=True)
                     continue
                 date_obj = date(year, month, day)
                 if date_obj > apply_date:
                     st.markdown(
-                        f'<div class="calendar-day-container-pc">'
-                        f'<div class="calendar-day-box-pc disabled-day">{day}</div>'
+                        f'<div class="calendar-day-container">'
+                        f'<div class="calendar-day-box disabled-day">{day}</div>'
                         f'<button data-testid="stButton" style="display: none;"></button>'
                         f'</div>',
                         unsafe_allow_html=True
@@ -360,16 +335,16 @@ def render_calendar_interactive(apply_date):
 
                 is_selected = date_obj in selected_dates
                 is_current = date_obj == current_date
-                class_name = "calendar-day-box-pc"
+                class_name = "calendar-day-box"
                 if is_selected:
                     class_name += " selected-day"
                 if is_current:
                     class_name += " current-day"
 
-                container_key = f"date_{date_obj.isoformat()}_pc"
+                container_key = f"date_{date_obj.isoformat()}"
                 st.markdown(
-                    f'<div class="calendar-day-container-pc">'
-                    f'<div class="selection-mark-pc"></div>'
+                    f'<div class="calendar-day-container">'
+                    f'<div class="selection-mark"></div>'
                     f'<div class="{class_name}">{day}</div>'
                     f'<button data-testid="stButton" key="{container_key}" onClick="window.parent.window.dispatchEvent(new Event(\'button_click_{container_key}\'));"></button>'
                     f'</div>',
@@ -382,7 +357,7 @@ def render_calendar_interactive(apply_date):
     # rerun_trigger 확인 및 페이지 새로고침
     if st.session_state.rerun_trigger:
         st.session_state.rerun_trigger = False
-        st.rerun()  # 콜백 외부에서 호출
+        st.rerun()
 
     # 현재 선택된 근무일자 목록 표시
     if st.session_state.selected_dates:
