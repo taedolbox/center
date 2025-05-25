@@ -123,8 +123,8 @@ def main():
         elif selected_sub_menu == "일용직(건설일용포함)":
             daily_worker_eligibility_app()    
         # ▼▼▼▼▼ 여기가 핵심 수정! ▼▼▼▼▼
-    #    elif selected_sub_menu == "실업급여 신청 가능 시점":
-    #        st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다. 자세한 내용은 고용센터에 문의하세요.")
+        elif selected_sub_menu == "실업급여 신청 가능 시점":
+            st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다. 자세한 내용은 고용센터에 문의하세요.")
 
     st.markdown("---")
     st.caption("ⓒ 2025 실업급여 도우미는 도움을 드리기 위한 목적입니다. 실제 가능 여부는 고용센터의 판단을 기준으로 합니다.")
