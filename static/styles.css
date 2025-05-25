@@ -110,7 +110,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     box-sizing: border-box;
     background-color: #ffffff;
 }
@@ -129,7 +129,7 @@
     justify-content: center;
     border: 1px solid #ddd;
     background-color: #ffffff;
-    border-radius: 50%;
+    border-radius: 50% !important; /* 원형 강제 */
     font-size: 1.1em;
     color: #000000;
     box-sizing: border-box;
@@ -142,7 +142,7 @@
 @media (prefers-color-scheme: dark) {
     .calendar-day-box {
         border: 1px solid #444;
-        background-color: #1e1e1e !important; /* 다크모드에서 숫자 배경 어두운 색 */
+        background-color: #1e1e1e !important; /* 다크모드 숫자 배경 */
         color: #ffffff;
     }
 }
@@ -169,7 +169,7 @@
     background-color: #4CAF50 !important;
     color: #ffffff !important;
     border: 2px solid #4CAF50 !important;
-    border-radius: 50% !important;
+    border-radius: 50% !important; /* 원형 유지 */
     font-weight: bold;
     box-sizing: border-box !important;
 }
@@ -206,8 +206,8 @@
 
 button[data-testid="stButton"] {
     position: absolute;
-    bottom: 0;
-    width: 40px !important; /* 고정된 크기 */
+    top: 0; /* 버튼을 숫자와 겹치지 않도록 위로 이동 */
+    width: 40px !important;
     height: 40px !important;
     background: none !important;
     border: none !important;
@@ -224,18 +224,19 @@ button[data-testid="stButton"]:hover {
 /* 모바일 달력 스타일 */
 @media (max-width: 500px) {
     .calendar-container {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        width: 100% !important;
+        display: grid !important; /* 모바일에서도 7열 유지 */
+        grid-template-columns: repeat(7, 50px) !important;
+        gap: 0 !important;
         padding: 0 !important;
-        margin: 0 !important;
+        margin: 0 auto !important;
+        min-width: 350px !important;
+        max-width: 350px !important;
         background-color: #e0e0e0;
     }
     .calendar-day-container {
         width: 50px !important;
-        height: 50px !important;
-        margin: 5px 0;
+        height: 60px !important;
+        margin: 0;
         background-color: #ffffff;
     }
     @media (prefers-color-scheme: dark) {
@@ -253,7 +254,7 @@ button[data-testid="stButton"]:hover {
         height: 10px;
     }
     button[data-testid="stButton"] {
-        width: 50px !important; /* 모바일에서도 고정된 크기 */
+        width: 50px !important;
         height: 50px !important;
     }
 }
