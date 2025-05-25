@@ -19,11 +19,11 @@
 .stMarkdown, .stSuccess, .stWarning {
     font-family: 'Nanum Gothic', sans-serif;
 }
-*/
+
 .sidebar .sidebar-content {
     background-color: #f8f9fa;
 }
-
+*/
 /* 달력 전용 스타일 */
 .calendar-wrapper {
     display: flex;
