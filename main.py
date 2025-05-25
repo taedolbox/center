@@ -103,7 +103,7 @@ def main():
                 # 여기에 일반 실업급여 신청 시점 안내 로직을 추가
                 st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다. 자세한 내용은 고용센터에 문의하세요.")
             elif sub_menu == "일용직(건설일용포함)":
-                daily_worker_eligibility_app()
+                  daily_worker_eligibility_app()
         # ▲▲▲▲▲ ▲▲▲▲▲ ▲▲▲▲▲ ▲▲▲▲▲ ▲▲▲▲▲
     else:
         st.info("왼쪽 사이드바에서 메뉴를 선택하거나 검색어를 입력하여 원하는 정보를 찾아보세요.")
@@ -121,8 +121,8 @@ def main():
         elif selected_sub_menu == "조기재취업수당":
             early_reemployment_app()
         # ▼▼▼▼▼ 여기가 핵심 수정! ▼▼▼▼▼
-        elif selected_sub_menu == "실업급여 신청 가능 시점":
-            st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다. 자세한 내용은 고용센터에 문의하세요.")
+    #    elif selected_sub_menu == "실업급여 신청 가능 시점":
+    #        st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다. 자세한 내용은 고용센터에 문의하세요.")
         elif selected_sub_menu == "일용직(건설일용포함)":
             daily_worker_eligibility_app()
         # ▲▲▲▲▲ ▲▲▲▲▲ ▲▲▲▲▲ ▲▲▲▲▲ ▲▲▲▲▲
