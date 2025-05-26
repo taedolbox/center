@@ -1,6 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
 
-/* 기존 스타일 
+/* 전체 페이지 배경 설정 */
+body, div[data-testid="stAppViewContainer"] {
+    background-color: #ffffff !important; /* 라이트 모드 기본 배경 */
+}
+
+@media (prefers-color-scheme: dark), [data-theme="dark"] {
+    body, div[data-testid="stAppViewContainer"] {
+        background-color: #2a2a2a !important; /* 다크 모드 기본 배경 */
+    }
+}
+
+/* 기존 스타일 */
 .stButton>button {
     background-color: #4CAF50;
     color: white;
@@ -68,7 +79,7 @@ div[data-testid="stToolbar"] {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    background-color: #ffffff !important; /* 라이트 모드에서 .calendar-container와 동일 */
+    background-color: #ffffff !important;
 }
 
 .calendar-day-box {
@@ -96,10 +107,10 @@ div[data-testid="stToolbar"] {
         color: #ffffff;
     }
     .calendar-container {
-        background-color: #2a2a2a !important; /* 다크 모드 배경 */
+        background-color: #2a2a2a !important;
     }
     .calendar-day-container {
-        background-color: #2a2a2a !important; /* 수정: 다크 모드에서 .calendar-container와 동일 */
+        background-color: #2a2a2a !important;
     }
     .calendar-day-box {
         border: 1px solid #888;
@@ -110,6 +121,9 @@ div[data-testid="stToolbar"] {
 
 /* 라이트 모드 - 모바일 */
 @media (max-width: 500px) and (prefers-color-scheme: light), (max-width: 500px) and [data-theme="light"] {
+    body, div[data-testid="stAppViewContainer"] {
+        background-color: #ffffff !important; /* 모바일 라이트 모드 전체 배경 */
+    }
     .calendar-container {
         display: flex !important;
         flex-direction: column !important;
@@ -123,7 +137,7 @@ div[data-testid="stToolbar"] {
         width: 50px;
         height: 50px;
         margin: 5px 0;
-        background-color: #e0e0e0 !important; /* 모바일 라이트 모드에서 .calendar-container와 동일 */
+        background-color: #e0e0e0 !important;
     }
     .calendar-day-box {
         width: 50px;
@@ -136,11 +150,14 @@ div[data-testid="stToolbar"] {
 
 /* 다크 모드 - 모바일 */
 @media (max-width: 500px) and (prefers-color-scheme: dark), (max-width: 500px) and [data-theme="dark"] {
+    body, div[data-testid="stAppViewContainer"] {
+        background-color: #2a2a2a !important; /* 모바일 다크 모드 전체 배경 */
+    }
     .calendar-container {
-        background-color: #2a2a2a !important; /* 모바일 다크 모드 배경 */
+        background-color: #2a2a2a !important;
     }
     .calendar-day-container {
-        background-color: #2a2a2a !important; /* 수정: 모바일 다크 모드에서 .calendar-container와 동일 */
+        background-color: #2a2a2a !important;
     }
     .calendar-day-box {
         border: 1px solid #888;
