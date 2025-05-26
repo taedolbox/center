@@ -1,5 +1,3 @@
-# app/daily_worker_eligibility.py
-
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta, date
@@ -148,10 +146,12 @@ def daily_worker_eligibility_app():
     st.markdown(f"- 선택한 근무일 수: **{worked_days}일**")
 
     condition1 = worked_days < threshold
-    if condition1:
-        st.success("✅ 조건 1 충족: 근무일 수가 기준 미만입니다.")
-    else:
-        st.warning("❌ 조건 1 불충족: 근무일 수가 기준 이상입니다.")
+    st.markdown(
+        f'<div class="result-text">'
+        f'<p>{"✅ 조건 1 충족: 근무일 수가 기준 미만입니다." if condition1 else "❌ 조건 1 불충족: 근무일 수가 기준 이상입니다."}</p>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
 
     # 조건 2 계산 및 표시 (건설일용근로자 기준)
     fourteen_days_prior_end = apply_date - timedelta(days=1)
@@ -160,10 +160,12 @@ def daily_worker_eligibility_app():
     no_work_14_days = all(day not in selected_dates for day in fourteen_days_prior_range)
     condition2 = no_work_14_days
 
-    if no_work_14_days:
-        st.success(f"✅ 조건 2 충족: 신청일 직전 14일간({fourteen_days_prior_start.strftime('%Y-%m-%d')} ~ {fourteen_days_prior_end.strftime('%Y-%m-%d')}) 근무내역이 없습니다.")
-    else:
-        st.warning(f"❌ 조건 2 불충족: 신청일 직전 14일간({fourteen_days_prior_start.strftime('%Y-%m-%d')} ~ {fourteen_days_prior_end.strftime('%Y-%m-%d')}) 내 근무기록이 존재합니다.")
+    st.markdown(
+        f'<div class="result-text">'
+        f'<p>{"✅ 조건 2 충족: 신청일 직전 14일간(" + fourteen_days_prior_start.strftime("%Y-%m-%d") + " ~ " + fourteen_days_prior_end.strftime("%Y-%m-%d") + ") 근무내역이 없습니다." if no_work_14_days else "❌ 조건 2 불충족: 신청일 직전 14일간(" + fourteen_days_prior_start.strftime("%Y-%m-%d") + " ~ " + fourteen_days_prior_end.strftime("%Y-%m-%d") + ") 내 근무기록이 존재합니다."}</p>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
 
     st.markdown("---")
 
@@ -179,11 +181,21 @@ def daily_worker_eligibility_app():
             worked_days_future = sum(1 for d in selected_dates if d <= future_date)
 
             if worked_days_future < threshold_future:
-                st.info(f"✅ **{future_date.strftime('%Y-%m-%d')}** 이후에 신청하면 요건을 충족할 수 있습니다.")
+                st.markdown(
+                    f'<div class="result-text">'
+                    f'<p>✅ <b>{future_date.strftime("%Y-%m-%d")}</b> 이후에 신청하면 요건을 충족할 수 있습니다.</p>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
                 found_suggestion = True
                 break
         if not found_suggestion:
-            st.warning("❗앞으로 30일 이내에는 요건을 충족할 수 없습니다. 근무일 수를 조정하거나 더 먼 날짜를 고려하세요.")
+            st.markdown(
+                f'<div class="result-text">'
+                f'<p>❗ 앞으로 30일 이내에는 요건을 충족할 수 없습니다. 근무일 수를 조정하거나 더 먼 날짜를 고려하세요.</p>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
 
     # 조건 2 불충족 시 미래 신청일 제안 (건설일용근로자 기준)
     if not condition2:
@@ -191,27 +203,60 @@ def daily_worker_eligibility_app():
         last_worked_day = max((d for d in selected_dates if d < apply_date), default=None)
         if last_worked_day:
             suggested_date = last_worked_day + timedelta(days=15)
-            st.info(f"✅ **{suggested_date.strftime('%Y-%m-%d')}** 이후에 신청하면 조건 2를 충족할 수 있습니다.")
+            st.markdown(
+                f'<div class="result-text">'
+                f'<p>✅ <b>{suggested_date.strftime("%Y-%m-%d")}</b> 이후에 신청하면 조건 2를 충족할 수 있습니다.</p>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
         else:
-            st.info("이미 최근 14일간 근무내역이 없으므로, 신청일을 조정할 필요는 없습니다.")
+            st.markdown(
+                f'<div class="result-text">'
+                f'<p>이미 최근 14일간 근무내역이 없으므로, 신청일을 조정할 필요는 없습니다.</p>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
 
     st.subheader("📌 최종 판단")
     # 일반일용근로자: 조건 1만 판단
     if condition1:
-        st.success(f"✅ 일반일용근로자: 신청 가능\n\n**수급자격 인정신청일이 속한 달의 직전 달 초일부터 수급자격 인정신청일까지({start_date.strftime('%Y-%m-%d')} ~ {apply_date.strftime('%Y-%m-%d')}) 근로일 수의 합이 같은 기간 동안의 총 일수의 3분의 1 미만**")
+        st.markdown(
+            f'<div class="result-text">'
+            f'<p>✅ 일반일용근로자: 신청 가능<br>'
+            f'<b>수급자격 인정신청일이 속한 달의 직전 달 초일부터 수급자격 인정신청일까지({start_date.strftime("%Y-%m-%d")} ~ {apply_date.strftime("%Y-%m-%d")}) 근로일 수의 합이 같은 기간 동안의 총 일수의 3분의 1 미만</b></p>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
     else:
-        st.error(f"❌ 일반일용근로자: 신청 불가능\n\n**수급자격 인정신청일이 속한 달의 직전 달 초일부터 수급자격 인정신청일까지({start_date.strftime('%Y-%m-%d')} ~ {apply_date.strftime('%Y-%m-%d')}) 근로일 수의 합이 같은 기간 동안의 총 일수의 3분의 1 이상입니다.**")
+        st.markdown(
+            f'<div class="result-text">'
+            f'<p>❌ 일반일용근로자: 신청 불가능<br>'
+            f'<b>수급자격 인정신청일이 속한 달의 직전 달 초일부터 수급자격 인정신청일까지({start_date.strftime("%Y-%m-%d")} ~ {apply_date.strftime("%Y-%m-%d")}) 근로일 수의 합이 같은 기간 동안의 총 일수의 3분의 1 이상입니다.</b></p>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
     # 건설일용근로자: 조건 1과 조건 2 모두 판단
     if condition1 and condition2:
-        st.success(f"✅ 건설일용근로자: 신청 가능\n\n**수급자격 인정신청일이 속한 달의 직전 달 초일부터 수급자격 인정신청일까지({start_date.strftime('%Y-%m-%d')} ~ {apply_date.strftime('%Y-%m-%d')}) 근로일 수의 합이 총 일수의 3분의 1 미만이고, 신청일 직전 14일간({fourteen_days_prior_start.strftime('%Y-%m-%d')} ~ {fourteen_days_prior_end.strftime('%Y-%m-%d')}) 근무 사실이 없음을 확인합니다.**")
+        st.markdown(
+            f'<div class="result-text">'
+            f'<p>✅ 건설일용근로자: 신청 가능<br>'
+            f'<b>수급자격 인정신청일이 속한 달의 직전 달 초일부터 수급자격 인정신청일까지({start_date.strftime("%Y-%m-%d")} ~ {apply_date.strftime("%Y-%m-%d")}) 근로일 수의 합이 총 일수의 3분의 1 미만이고, 신청일 직전 14일간({fourteen_days_prior_start.strftime("%Y-%m-%d")} ~ {fourteen_days_prior_end.strftime("%Y-%m-%d")}) 근무 사실이 없음을 확인합니다.</b></p>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
     else:
-        error_message = "❌ 건설일용근로자: 신청 불가능\n\n"
+        error_message = "❌ 건설일용근로자: 신청 불가능<br>"
         if not condition1:
-            error_message += f"**수급자격 인정신청일이 속한 달의 직전 달 초일부터 수급자격 인정신청일까지({start_date.strftime('%Y-%m-%d')} ~ {apply_date.strftime('%Y-%m-%d')}) 근로일 수의 합이 같은 기간 동안의 총 일수의 3분의 1 이상입니다.**\n\n"
+            error_message += f"<b>수급자격 인정신청일이 속한 달의 직전 달 초일부터 수급자격 인정신청일까지({start_date.strftime('%Y-%m-%d')} ~ {apply_date.strftime('%Y-%m-%d')}) 근로일 수의 합이 같은 기간 동안의 총 일수의 3분의 1 이상입니다.</b><br>"
         if not condition2:
-            error_message += f"**신청일 직전 14일간({fourteen_days_prior_start.strftime('%Y-%m-%d')} ~ {fourteen_days_prior_end.strftime('%Y-%m-%d')}) 근무내역이 있습니다.**"
-        st.error(error_message)
+            error_message += f"<b>신청일 직전 14일간({fourteen_days_prior_start.strftime('%Y-%m-%d')} ~ {fourteen_days_prior_end.strftime('%Y-%m-%d')}) 근무내역이 있습니다.</b>"
+        st.markdown(
+            f'<div class="result-text">'
+            f'<p>{error_message}</p>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
 if __name__ == "__main__":
     daily_worker_eligibility_app()
