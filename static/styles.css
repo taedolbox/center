@@ -88,7 +88,7 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    background-color: #f0f0f0; /* 라이트 모드 배경 */
+    background-color: #ffffff; /* 라이트 모드 배경 */
 }
 
 @media (prefers-color-scheme: dark) {
