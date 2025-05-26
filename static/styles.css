@@ -57,7 +57,7 @@ div[data-testid="stToolbar"] {
     margin: 0 auto !important;
     min-width: 280px !important;
     max-width: 280px !important;
-    background-color: #f0f0f0 !important;
+    background-color: #ffffff !important;
 }
 
 .calendar-day-container {
@@ -68,7 +68,7 @@ div[data-testid="stToolbar"] {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    background-color: #f0f0f0 !important; /* 라이트 모드에서 .calendar-container와 동일 */
+    background-color: #ffffff !important; /* 라이트 모드에서 .calendar-container와 동일 */
 }
 
 .calendar-day-box {
