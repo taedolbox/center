@@ -7,26 +7,57 @@ body, div[data-testid="stAppViewContainer"] {
 }
 
 /* Streamlit 컴포넌트 텍스트 색상 */
-.stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div {
+.stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div, .result-text, .result-text p {
     color: #000000 !important; /* 라이트 모드 텍스트 색상 */
 }
 
-/* 사이드바 텍스트 색상 */
-.sidebar .sidebar-content, .sidebar .sidebar-content * {
+/* 사이드바 텍스트 색상 및 표시 */
+.sidebar .sidebar-content, .sidebar .sidebar-content *, div[data-testid="stSidebar"] {
     color: #000000 !important; /* 라이트 모드 사이드바 텍스트 */
+    display: block !important; /* 사이드바 강제 표시 */
+    background-color: #f8f9fa !important;
+}
+
+/* 모바일 사이드바 토글 버튼 (햄버거 메뉴) */
+div[data-testid="stSidebarNav"]::before {
+    content: "\2630"; /* 햄버거 아이콘 (유니코드) */
+    display: block;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    color: #000000 !important;
+    cursor: pointer;
+    z-index: 1000;
+    background-color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* 사이드바 토글 버튼 클릭 시 사이드바 표시 */
+div[data-testid="stSidebar"][aria-expanded="true"] {
+    display: block !important;
+    width: 250px !important;
+    height: 100vh !important;
+    background-color: #f8f9fa !important;
 }
 
 /* 다크 모드 전체 설정 */
 @media (prefers-color-scheme: dark), [data-theme="dark"] {
     body, div[data-testid="stAppViewContainer"] {
         background-color: #2a2a2a !important;
-        color: #ffffff !important; /* 다크 모드 텍스트 색상 */
-    }
-    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div {
         color: #ffffff !important;
     }
-    .sidebar .sidebar-content, .sidebar .sidebar-content * {
+    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div, .result-text, .result-text p {
         color: #ffffff !important;
+    }
+    .sidebar .sidebar-content, .sidebar .sidebar-content *, div[data-testid="stSidebar"] {
+        color: #ffffff !important;
+        background-color: #333333 !important;
+    }
+    div[data-testid="stSidebarNav"]::before {
+        color: #ffffff !important;
+        background-color: #2a2a2a !important;
     }
 }
 
@@ -52,16 +83,6 @@ body, div[data-testid="stAppViewContainer"] {
 
 .stMarkdown, .stSuccess, .stWarning {
     font-family: 'Nanum Gothic', sans-serif;
-}
-
-.sidebar .sidebar-content {
-    background-color: #f8f9fa;
-}
-
-@media (prefers-color-scheme: dark), [data-theme="dark"] {
-    .sidebar .sidebar-content {
-        background-color: #333333 !important;
-    }
 }
 
 /* Streamlit 상단 메뉴 숨기기 */
@@ -156,11 +177,13 @@ div[data-testid="stToolbar"] {
         background-color: #ffffff !important;
         color: #000000 !important;
     }
-    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div {
+    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div, .result-text, .result-text p {
         color: #000000 !important;
     }
-    .sidebar .sidebar-content, .sidebar .sidebar-content * {
+    .sidebar .sidebar-content, .sidebar .sidebar-content *, div[data-testid="stSidebar"] {
         color: #000000 !important;
+        background-color: #f8f9fa !important;
+        display: block !important;
     }
     .calendar-container {
         display: flex !important;
@@ -193,11 +216,13 @@ div[data-testid="stToolbar"] {
         background-color: #2a2a2a !important;
         color: #ffffff !important;
     }
-    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div {
+    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] *, .result-text, .result-text p {
         color: #ffffff !important;
     }
-    .sidebar .sidebar-content, .sidebar .sidebar-content * {
+    .sidebar .sidebar-content, .sidebar .sidebar-content *, div[data-testid="stSidebar"] {
+        background-color: #333333 !important;
         color: #ffffff !important;
+        display: block !important;
     }
     .calendar-container {
         background-color: #2a2a2a !important;
