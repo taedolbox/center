@@ -99,7 +99,7 @@ div[data-testid="stToolbar"] {
         background-color: #2a2a2a !important; /* 다크 모드 배경 */
     }
     .calendar-day-container {
-        background-color: #2a2a2a !important; /* 다크 모드에서 .calendar-container와 동일 */
+        background-color: #0e1117 !important; /* 다크 모드에서 .calendar-container와 동일 */
     }
     .calendar-day-box {
         border: 1px solid #888;
