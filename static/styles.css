@@ -7,7 +7,7 @@ body, div[data-testid="stAppViewContainer"] {
 }
 
 /* Streamlit 컴포넌트 텍스트 색상 */
-.stMarkdown, .stText, .stSuccess, .stWarning, .stError, .stInfo {
+.stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div {
     color: #000000 !important; /* 라이트 모드 텍스트 색상 */
 }
 
@@ -22,7 +22,7 @@ body, div[data-testid="stAppViewContainer"] {
         background-color: #2a2a2a !important;
         color: #ffffff !important; /* 다크 모드 텍스트 색상 */
     }
-    .stMarkdown, .stText, .stSuccess, .stWarning, .stError, .stInfo {
+    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div {
         color: #ffffff !important;
     }
     .sidebar .sidebar-content, .sidebar .sidebar-content * {
@@ -156,7 +156,7 @@ div[data-testid="stToolbar"] {
         background-color: #ffffff !important;
         color: #000000 !important;
     }
-    .stMarkdown, .stText, .stSuccess, .stWarning, .stError, .stInfo {
+    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div {
         color: #000000 !important;
     }
     .sidebar .sidebar-content, .sidebar .sidebar-content * {
@@ -193,7 +193,7 @@ div[data-testid="stToolbar"] {
         background-color: #2a2a2a !important;
         color: #ffffff !important;
     }
-    .stMarkdown, .stText, .stSuccess, .stWarning, .stError, .stInfo {
+    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div {
         color: #ffffff !important;
     }
     .sidebar .sidebar-content, .sidebar .sidebar-content * {
