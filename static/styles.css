@@ -11,38 +11,42 @@ body, div[data-testid="stAppViewContainer"] {
     color: #000000 !important; /* 라이트 모드 텍스트 색상 */
 }
 
-/* 사이드바 텍스트 색상 및 표시 */
-.sidebar .sidebar-content, .sidebar .sidebar-content *, div[data-testid="stSidebar"] {
-    color: #000000 !important; /* 라이트 모드 사이드바 텍스트 */
+/* 사이드바 및 토글 버튼 설정 */
+div[data-testid="stSidebar"], .sidebar .sidebar-content {
     display: block !important; /* 사이드바 강제 표시 */
-    background-color: #f8f9fa !important;
-}
-
-/* 모바일 사이드바 토글 버튼 (햄버거 메뉴) */
-div[data-testid="stSidebarNav"]::before {
-    content: "\2630"; /* 햄버거 아이콘 (유니코드) */
-    display: block;
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    color: #000000 !important;
-    cursor: pointer;
-    z-index: 1000;
-    background-color: #ffffff;
-    padding: 5px 10px;
-    border-radius: 5px;
-}
-
-/* 사이드바 토글 버튼 클릭 시 사이드바 표시 */
-div[data-testid="stSidebar"][aria-expanded="true"] {
-    display: block !important;
+    background-color: #f8f9fa !important; /* 라이트 모드 배경 */
+    color: #000000 !important; /* 라이트 모드 텍스트 */
     width: 250px !important;
     height: 100vh !important;
-    background-color: #f8f9fa !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: -250px !important; /* 기본적으로 숨김 */
+    transition: left 0.3s ease !important;
+    z-index: 1000 !important;
 }
 
-/* 다크 모드 전체 설정 */
+/* 사이드바 토글 버튼 (햄버거 메뉴) */
+div[data-testid="stSidebarNav"]::before {
+    content: "\2630"; /* 햄버거 아이콘 */
+    display: block !important;
+    position: fixed !important;
+    top: 10px !important;
+    right: 10px !important;
+    font-size: 24px !important;
+    color: #000000 !important; /* 라이트 모드 */
+    background-color: #ffffff !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+    z-index: 1001 !important;
+}
+
+/* 사이드바 열린 상태 */
+div[data-testid="stSidebar"][aria-expanded="true"] {
+    left: 0 !important; /* 사이드바 표시 */
+}
+
+/* 다크 모드 설정 */
 @media (prefers-color-scheme: dark), [data-theme="dark"] {
     body, div[data-testid="stAppViewContainer"] {
         background-color: #2a2a2a !important;
@@ -51,9 +55,9 @@ div[data-testid="stSidebar"][aria-expanded="true"] {
     .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div, .result-text, .result-text p {
         color: #ffffff !important;
     }
-    .sidebar .sidebar-content, .sidebar .sidebar-content *, div[data-testid="stSidebar"] {
-        color: #ffffff !important;
+    div[data-testid="stSidebar"], .sidebar .sidebar-content {
         background-color: #333333 !important;
+        color: #ffffff !important;
     }
     div[data-testid="stSidebarNav"]::before {
         color: #ffffff !important;
@@ -180,9 +184,9 @@ div[data-testid="stToolbar"] {
     .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div, .result-text, .result-text p {
         color: #000000 !important;
     }
-    .sidebar .sidebar-content, .sidebar .sidebar-content *, div[data-testid="stSidebar"] {
-        color: #000000 !important;
+    div[data-testid="stSidebar"], .sidebar .sidebar-content {
         background-color: #f8f9fa !important;
+        color: #000000 !important;
         display: block !important;
     }
     .calendar-container {
@@ -216,10 +220,10 @@ div[data-testid="stToolbar"] {
         background-color: #2a2a2a !important;
         color: #ffffff !important;
     }
-    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] *, .result-text, .result-text p {
+    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div, .result-text, .result-text p {
         color: #ffffff !important;
     }
-    .sidebar .sidebar-content, .sidebar .sidebar-content *, div[data-testid="stSidebar"] {
+    div[data-testid="stSidebar"], .sidebar .sidebar-content {
         background-color: #333333 !important;
         color: #ffffff !important;
         display: block !important;
