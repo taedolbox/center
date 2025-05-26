@@ -93,7 +93,7 @@
 
 @media (prefers-color-scheme: dark) {
     .calendar-day-container {
-        background-color: #ffffff !important; /* 수정: 다크 모드에서 .calendar-container와 동일 */
+        background-color: #000000 !important; /* 수정: 다크 모드에서 .calendar-container와 동일 */
     }
 }
 
