@@ -72,7 +72,7 @@
     margin: 0 auto !important;
     min-width: 280px !important;
     max-width: 280px !important;
-    background-color: #f0f0f0; /* 라이트 모드 배경 */
+    background-color: #ffffff; /* 라이트 모드 배경 */
 }
 
 .calendar-day-container {
