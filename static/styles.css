@@ -1,69 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
 
 /* 전체 페이지 배경 및 텍스트 설정 */
-body, div[data-testid="stAppViewContainer"], div[data-testid="stHeader"] {
+body, div[data-testid="stAppViewContainer"] {
     background-color: #ffffff !important; /* 라이트 모드 기본 배경 */
     color: #000000 !important; /* 라이트 모드 기본 텍스트 색상 */
 }
 
 /* Streamlit 컴포넌트 텍스트 색상 */
-.stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div, .result-text, .result-text p {
+.stMarkdown, .stText, .stSuccess, .stWarning, .stError, .stInfo {
     color: #000000 !important; /* 라이트 모드 텍스트 색상 */
 }
 
-/* 사이드바 및 토글 버튼 설정 */
-div[data-testid="stSidebar"], .sidebar .sidebar-content {
-    display: block !important; /* 사이드바 강제 표시 */
-    background-color: #f8f9fa !important; /* 라이트 모드 배경 */
-    color: #000000 !important; /* 라이트 모드 텍스트 */
-    width: 250px !important;
-    height: 100vh !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: -250px !important; /* 기본적으로 숨김 */
-    transition: left 0.3s ease !important;
-    z-index: 1000 !important;
+/* 사이드바 텍스트 색상 */
+.sidebar .sidebar-content, .sidebar .sidebar-content * {
+    color: #000000 !important; /* 라이트 모드 사이드바 텍스트 */
 }
 
-/* 사이드바 토글 버튼 (햄버거 메뉴) */
-div[data-testid="stSidebarNav"]::before {
-    content: "\2630"; /* 햄버거 아이콘 */
-    display: block !important;
-    position: fixed !important;
-    top: 10px !important;
-    right: 10px !important;
-    font-size: 24px !important;
-    color: #000000 !important; /* 라이트 모드 */
-    background-color: #ffffff !important;
-    padding: 5px 10px !important;
-    border-radius: 5px !important;
-    border: 1px solid #000000 !important; /* 테두리 추가 */
-    cursor: pointer !important;
-    z-index: 1001 !important;
-}
-
-/* 사이드바 열린 상태 */
-div[data-testid="stSidebar"][aria-expanded="true"] {
-    left: 0 !important; /* 사이드바 표시 */
-}
-
-/* 다크 모드 설정 */
+/* 다크 모드 전체 설정 */
 @media (prefers-color-scheme: dark), [data-theme="dark"] {
-    body, div[data-testid="stAppViewContainer"], div[data-testid="stHeader"] {
-        background-color: #333333 !important; /* 다크 모드 메인 배경 밝게 */
+    body, div[data-testid="stAppViewContainer"] {
+        background-color: #2a2a2a !important;
+        color: #ffffff !important; /* 다크 모드 텍스트 색상 */
+    }
+    .stMarkdown, .stText, .stSuccess, .stWarning, .stError, .stInfo {
         color: #ffffff !important;
     }
-    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div, .result-text, .result-text p {
+    .sidebar .sidebar-content, .sidebar .sidebar-content * {
         color: #ffffff !important;
-    }
-    div[data-testid="stSidebar"], .sidebar .sidebar-content {
-        background-color: #555555 !important; /* 다크 모드 사이드바 배경 밝게 */
-        color: #ffffff !important;
-    }
-    div[data-testid="stSidebarNav"]::before {
-        color: #000000 !important; /* 아이콘 선명하게 */
-        background-color: #ffffff !important; /* 대비 높은 배경 */
-        border: 1px solid #000000 !important; /* 테두리 */
     }
 }
 
@@ -89,6 +52,16 @@ div[data-testid="stSidebar"][aria-expanded="true"] {
 
 .stMarkdown, .stSuccess, .stWarning {
     font-family: 'Nanum Gothic', sans-serif;
+}
+
+.sidebar .sidebar-content {
+    background-color: #f8f9fa;
+}
+
+@media (prefers-color-scheme: dark), [data-theme="dark"] {
+    .sidebar .sidebar-content {
+        background-color: #333333 !important;
+    }
 }
 
 /* Streamlit 상단 메뉴 숨기기 */
@@ -165,10 +138,10 @@ div[data-testid="stToolbar"] {
         color: #ffffff !important;
     }
     .calendar-container {
-        background-color: #333333 !important;
+        background-color: #2a2a2a !important;
     }
     .calendar-day-container {
-        background-color: #333333 !important;
+        background-color: #2a2a2a !important;
     }
     .calendar-day-box {
         border: 1px solid #888;
@@ -179,17 +152,15 @@ div[data-testid="stToolbar"] {
 
 /* 라이트 모드 - 모바일 */
 @media (max-width: 500px) and (prefers-color-scheme: light), (max-width: 500px) and [data-theme="light"] {
-    body, div[data-testid="stAppViewContainer"], div[data-testid="stHeader"] {
+    body, div[data-testid="stAppViewContainer"] {
         background-color: #ffffff !important;
         color: #000000 !important;
     }
-    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div, .result-text, .result-text p {
+    .stMarkdown, .stText, .stSuccess, .stWarning, .stError, .stInfo {
         color: #000000 !important;
     }
-    div[data-testid="stSidebar"], .sidebar .sidebar-content {
-        background-color: #f8f9fa !important;
+    .sidebar .sidebar-content, .sidebar .sidebar-content * {
         color: #000000 !important;
-        display: block !important;
     }
     .calendar-container {
         display: flex !important;
@@ -218,22 +189,26 @@ div[data-testid="stToolbar"] {
 
 /* 다크 모드 - 모바일 */
 @media (max-width: 500px) and (prefers-color-scheme: dark), (max-width: 500px) and [data-theme="dark"] {
-    body, div[data-testid="stAppViewContainer"], div[data-testid="stHeader"] {
-        background-color: #333333 !important;
+    body, div[data-testid="stAppViewContainer"] {
+        background-color: #2a2a2a !important;
         color: #ffffff !important;
     }
-    .stMarkdown, .stText, .stWrite, .stSuccess, .stWarning, .stError, .stInfo, [class*="st-emotion-cache"] p, [class*="st-emotion-cache"] div, .result-text, .result-text p {
+    .stMarkdown, .stText, .stSuccess, .stWarning, .stError, .stInfo {
         color: #ffffff !important;
     }
-    div[data-testid="stSidebar"], .sidebar .sidebar-content {
-        background-color: #555555 !important;
+    .sidebar .sidebar-content, .sidebar .sidebar-content * {
         color: #ffffff !important;
-        display: block !important;
     }
-    div[data-testid="stSidebarNav"]::before {
-        color: #000000 !important;
-        background-color: #ffffff !important;
-        border: 1px solid #000000 !important;
+    .calendar-container {
+        background-color: #2a2a2a !important;
+    }
+    .calendar-day-container {
+        background-color: #2a2a2a !important;
+    }
+    .calendar-day-box {
+        border: 1px solid #888;
+        background-color: #000000;
+        color: #ffffff !important;
     }
 }
 
@@ -245,7 +220,7 @@ div[data-testid="stToolbar"] {
 
 @media (prefers-color-scheme: dark), [data-theme="dark"] {
     .calendar-day-box:hover {
-        background-color: #444444;
+        background-color: #333333;
         border-color: #aaa;
     }
 }
@@ -277,8 +252,13 @@ div[data-testid="stToolbar"] {
 }
 
 .selection-mark {
+    position: absolute;
+    top: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
     background-color: #4CAF50;
-    border: 1px solid #333;
+    border: 1px solid #ffffff;
     display: none;
 }
 
@@ -289,11 +269,19 @@ div[data-testid="stToolbar"] {
 button[data-testid="stButton"] {
     width: 40px !important;
     height: 40px !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background: none !important;
     border: none !important;
     padding: 0 !important;
+    margin: 0 !important;
     cursor: pointer;
     opacity: 0;
+    box-sizing: border-box;
 }
 
 @media (max-width: 500px) {
@@ -307,7 +295,7 @@ button[data-testid="stButton"]:hover {
     opacity: 0.1;
 }
 
-/* 폼 버튼 숨기기 */
-.stay-button[data-testid="stFormSubmitButton"] {
-    display: none !important;
+/* 폼 버튼 숨김 */
+button[data-testid="stFormSubmitButton"] {
+    display: none;
 }
