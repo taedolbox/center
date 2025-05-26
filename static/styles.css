@@ -22,6 +22,11 @@
     background-color: #f8f9fa;
 }
 
+/* Streamlit 상단 메뉴 숨기기 */
+div[data-testid="stToolbar"] {
+    display: none !important;
+}
+
 /* 달력 전용 스타일 */
 .calendar-wrapper {
     display: flex;
@@ -52,7 +57,7 @@
     margin: 0 auto !important;
     min-width: 280px !important;
     max-width: 280px !important;
-    background-color: #f0f0f0 !important; /* 라이트 모드 배경 */
+    background-color: #f0f0f0 !important;
 }
 
 .calendar-day-container {
@@ -73,7 +78,7 @@
     align-items: center;
     justify-content: center;
     border: 1px solid #333;
-    background-color: #ffffff; /* 라이트 모드 숫자 원 배경 */
+    background-color: #ffffff;
     border-radius: 50%;
     font-size: 1.1em;
     color: #000000;
@@ -85,7 +90,7 @@
 }
 
 /* 다크 모드 - PC */
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark), [data-theme="dark"] {
     .calendar-wrapper h3 {
         background-color: #2e2e2e !important;
         color: #ffffff;
@@ -98,7 +103,7 @@
     }
     .calendar-day-box {
         border: 1px solid #888;
-        background-color: #000000; /* 다크 모드 숫자 원 배경 */
+        background-color: #000000;
         color: #ffffff;
     }
 }
@@ -112,13 +117,13 @@
         width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
-        background-color: #e0e0e0 !important; /* 모바일 라이트 모드 배경 */
+        background-color: #e0e0e0 !important;
     }
     .calendar-day-container {
         width: 50px;
         height: 50px;
         margin: 5px 0;
-        background-color: #e0e0e0 !important; /* 모바일 라이트 모드에서 .calendar-container와 동일 */
+        background-color: #e0e0e0 !important;
     }
     .calendar-day-box {
         width: 50px;
@@ -130,12 +135,12 @@
 }
 
 /* 다크 모드 - 모바일 */
-@media (max-width: 500px) and (prefers-color-scheme: dark) {
+@media (max-width: 500px) and (prefers-color-scheme: dark), (max-width: 500px) and [data-theme="dark"] {
     .calendar-container {
-        background-color: #2a2a2a !important; /* 모바일 다크 모드 배경 */
+        background-color: #2a2a2a !important;
     }
     .calendar-day-container {
-        background-color: #2a2a2a !important; /* 모바일 다크 모드에서 .calendar-container와 동일 */
+        background-color: #2a2a2a !important;
     }
     .calendar-day-box {
         border: 1px solid #888;
@@ -149,7 +154,7 @@
     border-color: #555;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark), [data-theme="dark"] {
     .calendar-day-box:hover {
         background-color: #333333;
         border-color: #aaa;
@@ -174,7 +179,7 @@
     cursor: not-allowed;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark), [data-theme="dark"] {
     .calendar-day-box.disabled-day {
         background-color: #2e2e2e;
         border: 1px solid #444;
