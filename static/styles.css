@@ -1,232 +1,230 @@
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
-
-body, div[data-testid="stAppViewContainer"] {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-}
-
-.stMarkdown, .stText, .stSuccess, .stWarning, .stError, .stInfo {
-    color: #000000 !important;
-}
-
-.sidebar .sidebar-content, .sidebar .sidebar-content * {
-    color: #000000 !important;
-}
-
-@media (prefers-color-scheme: dark), [data-theme="dark"] {
-    body, div[data-testid="stAppViewContainer"] {
-        background-color: #2a2a2a !important;
-        color: #ffffff !important;
-    }
-    .stMarkdown, .stText, .stSuccess, .stWarning, .stError, .stInfo {
-        color: #ffffff !important;
-    }
-    .sidebar .sidebar-content, .sidebar .sidebar-content * {
-        color: #ffffff !important;
-    }
-}
-
-.stButton>button {
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-}
-
-.stRadio>label {
-    font-size: 16px;
-    color: #333 !important;
-}
-
-@media (prefers-color-scheme: dark), [data-theme="dark"] {
-    .stRadio>label {
-        color: #ffffff !important;
-    }
-}
-
-.stMarkdown, .stSuccess, .stWarning {
-    font-family: 'Nanum Gothic', sans-serif;
-}
-
-.sidebar .sidebar-content {
-    background-color: #f8f9fa;
-}
-
-@media (prefers-color-scheme: dark), [data-theme="dark"] {
-    .sidebar .sidebar-content {
-        background-color: #333333 !important;
-    }
-}
-
-div[data-testid="stToolbar"] {
-    display: none !important;
-}
-
-.calendar-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    min-width: 300px;
-    max-width: 300px;
-    margin: 0 auto;
-}
-
-.calendar-wrapper h3 {
-    background-color: #f0f0f0;
-    color: #000000 !important;
-    text-align: center;
-    padding: 8px 0;
-    margin-bottom: 15px;
-    font-size: 1.5em;
-    width: 100%;
-}
-
-.calendar-container {
+/* 컨테이너 스타일 */
+div[data-testid="stHorizontalBlock"] {
     display: grid !important;
-    grid-template-columns: repeat(7, 40px) !important;
-    gap: 0 !important;
-    padding: 0 !important;
-    margin: 0 auto !important;
-    min-width: 280px !important;
-    max-width: 280px !important;
-    background-color: #ffffff !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 0px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    justify-content: flex-start !important;
 }
 
-.calendar-day-container {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #ffffff !important;
+/* stMarkdownContainer 스타일 */
+div[data-testid="stMarkdownContainer"] {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    text-align: left !important;
 }
 
-.calendar-day-box {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #333;
-    background-color: #ffffff;
+/* 요일과 날짜를 포함하지 않은 stMarkdownContainer */
+div[data-testid="stMarkdownContainer"]:not(:has(.day-header)):not(:has(.day)) {
+    justify-content: flex-start !important;
+}
+
+/* 요일 헤더 스타일 */
+.day-header {
+    text-align: center;
+    font-weight: bold;
+    margin: 0 auto;
+    padding: 0;
+    color: #333;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    aspect-ratio: 1/1 !important;
+    line-height: 40px;
+    border: 1px solid #ccc;
     border-radius: 50%;
-    font-size: 1.1em;
-    color: #000000 !important;
+    background-color: #f8f8f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-@media (prefers-color-scheme: dark), [data-theme="dark"] {
-    .calendar-wrapper h3 {
-        background-color: #2e2e2e !important;
-        color: #ffffff !important;
-    }
-    .calendar-container {
-        background-color: #2a2a2a !important;
-    }
-    .calendar-day-container {
-        background-color: #2a2a2a !important;
-    }
-    .calendar-day-box {
-        border: 1px solid #888;
-        background-color: #000000;
-        color: #ffffff !important;
-    }
+/* 날짜 스타일 */
+.day {
+    text-align: center;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    aspect-ratio: 1/1 !important;
+    line-height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    margin: 0 auto;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 6000 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    padding: 10px !important;
 }
 
-/* ✅ 수정된 모바일 - 7열 유지 */
-@media (max-width: 500px) {
-    .calendar-container {
-        display: grid !important;
-        grid-template-columns: repeat(7, 1fr) !important;
-        width: 100% !important;
-        background-color: #e0e0e0 !important;
-    }
-    .calendar-day-container {
-        width: 100%;
-        height: 40px;
-    }
-    .calendar-day-box {
-        width: 100%;
-        height: 40px;
-        font-size: 1em;
-        border-radius: 50%;
-    }
+/* 호버 및 터치 시 체크박스 범위에 녹색 점 표시 */
+.day:not(.disabled):hover::after,
+.day:not(.disabled):active::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #00ff00;
+    border-radius: 50%;
+    left: -10px; /* 체크박스 범위 중앙 (-20px + 40px/2) */
+    top: 20px; /* 체크박스 범위 중앙 (0 + 40px/2) */
+    z-index: 7000;
+    opacity: 1;
+    animation: fadeOut 1s forwards;
 }
 
-.calendar-day-box:hover {
-    background-color: #e0e0e0;
-    border-color: #555;
+/* 페이드 아웃 애니메이션 */
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
 }
 
-@media (prefers-color-scheme: dark), [data-theme="dark"] {
-    .calendar-day-box:hover {
-        background-color: #333333;
-        border-color: #aaa;
-    }
-}
-
-.calendar-day-box.current-day:not(.selected-day) {
-    border: 2px solid blue !important;
-}
-
-.calendar-day-box.selected-day {
-    background-color: #4CAF50 !important;
-    color: #ffffff !important;
-    border: 2px solid #4CAF50 !important;
+/* 선택된 날짜 (빨간 테두리) */
+.day.selected {
+    border: 2px solid #ff4444 !important;
     font-weight: bold;
 }
 
-.calendar-day-box.disabled-day {
-    border: 1px solid #555;
-    background-color: #e0e0e0;
-    color: #666 !important;
-    cursor: not-allowed;
+/* 체크박스 스타일 */
+.stCheckbox {
+    position: absolute;
+    width: 40px !important;
+    height: 40px !important;
+    left: -20px;
+    top: 0;
+    z-index: 6500 !important;
+    opacity: 0; /* 투명하게, 클릭 가능 */
+    pointer-events: auto !important;
+    cursor: pointer;
 }
 
-@media (prefers-color-scheme: dark), [data-theme="dark"] {
-    .calendar-day-box.disabled-day {
-        background-color: #2e2e2e;
-        border: 1px solid #444;
-        color: #666 !important;
+.stCheckbox > div > div {
+    display: none !important;
+}
+
+/* 결과 텍스트 스타일 */
+.result-text {
+    margin: 10px 0;
+    padding: 10px;
+    border-left: 4px solid #36A2EB;
+    background-color: #f9f9f9;
+}
+
+/* 모바일 스타일 */
+@media (max-width: 767px) {
+    div[data-testid="stHorizontalBlock"] {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        gap: 2px !important;
+        justify-content: flex-start !important;
+        margin-left: 0;
+    }
+    div[data-testid="stMarkdownContainer"] {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    div[data-testid="stMarkdownContainer"]:not(:has(.day-header)):not(:has(.day)) {
+        justify-content: flex-start !important;
+    }
+    .day {
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        aspect-ratio: 1/1 !important;
+        line-height: 40px !important;
+        font-size: 1em;
+        margin: 2px auto !important;
+        padding: 15px !important;
+        touch-action: manipulation !important;
+    }
+    .day:not(.disabled):hover::after,
+    .day:not(.disabled):active::after {
+        left: -10px;
+        top: 20px;
+    }
+    .stCheckbox {
+        width: 48px !important;
+        height: 48px !important;
+        left: -24px;
+        top: -4px;
+    }
+    .result-text {
+        padding: 8px;
     }
 }
 
-.selection-mark {
-    position: absolute;
-    top: 2px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: #4CAF50;
-    border: 1px solid #ffffff;
-    display: none;
+/* 데스크탑 스타일 */
+@media (min-width: 768px) {
+    div[data-testid="stHorizontalBlock"] {
+        max-width: 600px !important;
+        margin: 0 0 0 0 !important;
+        justify-content: flex-start !important;
+    }
 }
 
-.selected-day .selection-mark {
-    display: block;
+/* 모든 텍스트 왼쪽 정렬 */
+.stMarkdown, .stText, .stHeader {
+    text-align: left !important;
 }
 
-button[data-testid="stButton"] {
-    width: 40px !important;
-    height: 40px !important;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: none !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    cursor: pointer;
-    opacity: 0;
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark), [data-theme="dark"] {
+    .day-header {
+        color: #ddd;
+        background-color: #444;
+    }
+    .day-header.weekend {
+        color: #ff6666;
+    }
+    .day {
+        background-color: #333;
+        color: #ddd;
+        border-color: #888;
+    }
+    .day:hover:not(.disabled) {
+        background-color: #444;
+    }
+    .day.disabled {
+        background-color: #555;
+        color: #888;
+    }
+    .day.selected {
+        border-color: #ff6666 !important;
+    }
+    .day.current {
+        border-color: #6666ff;
+    }
+    .result-text {
+        background-color: #2a2a2a;
+        border-left-color: #4CAF50;
+    }
 }
 
-button[data-testid="stButton"]:hover {
-    opacity: 0.1;
+.day:hover:not(.disabled) {
+    background-color: #f0f0f0;
 }
 
-button[data-testid="stFormSubmitButton"] {
-    display: none;
+.day.current {
+    border: 2px solid #4444ff;
+}
+
+.day.disabled {
+    background-color: #e0e0e0;
+    color: #888;
+    cursor: not-allowed;
 }
