@@ -248,4 +248,3 @@ def daily_worker_eligibility_app():
 
 if __name__ == "__main__":
     daily_worker_eligibility_app()
-원숫자 클릭시 디버그를 위한 출력내용이 있나?
