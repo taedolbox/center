@@ -90,7 +90,7 @@ def render_calendar(apply_date):
                                             selected_dates.discard(date_obj)
                                         st.session_state.selected_dates = selected_dates
                                         # 디버깅 로그
-                                        st.write(f"Debug: Date {date_obj}, Selected: {checkbox_value}, Class: {class_name}")
+                                        #st.write(f"Debug: Date {date_obj}, Selected: {checkbox_value}, Class: {class_name}")
                                         st.rerun()
 
     # 선택된 근무일자 표시
