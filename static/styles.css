@@ -1,277 +1,204 @@
 # static/styles.css
 /* 컨테이너 스타일 */
 div[data-testid="stHorizontalBlock"] {
-    display: grid !important; /* Streamlit의 수평 블록을 그리드 레이아웃으로 설정하여 7열 구조 지원 */
-    grid-template-columns: repeat(7, 1fr) !important; /* 7개의 동일한 너비(1fr) 열로 구성된 그리드 생성 */
-    gap: 0px !important; /* 열 사이의 간격을 0px로 설정하여 밀착 배치 */
-    width: 100% !important; /* 컨테이너의 너비를 부모 요소의 100%로 설정 */
-    box-sizing: border-box !important; /* 패딩과 테두리를 너비에 포함하여 정확한 크기 계산 */
-    justify-content: flex-start !important; /* 항목을 컨테이너 왼쪽에서 시작하도록 정렬 */
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 0px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    justify-content: flex-start !important;
 }
 
 /* stMarkdownContainer 스타일 */
 div[data-testid="stMarkdownContainer"] {
-    display: flex !important; /* Streamlit의 Markdown 컨테이너를 플렉스 레이아웃으로 설정 */
-    justify-content: center !important; /* 수평으로 가운데 정렬 */
-    align-items: center !important; /* 수직으로 가운데 정렬 */
-    width: 100% !important; /* 컨테이너의 너비를 부모 요소의 100%로 설정 */
-    height: 100% !important; /* 컨테이너의 높이를 부모 요소의 100%로 설정 */
-    text-align: left !important; /* 텍스트를 왼쪽으로 정렬 */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    text-align: left !important;
 }
 
 /* 요일과 날짜를 포함하지 않은 stMarkdownContainer */
 div[data-testid="stMarkdownContainer"]:not(:has(.day-header)):not(:has(.day)) {
-    justify-content: flex-start !important; /* 요일 헤더(.day-header)와 날짜(.day)가 없는 경우 왼쪽 정렬로 변경 */
+    justify-content: flex-start !important;
+    flex-direction: column !important;
 }
 
 /* 요일 헤더 스타일 */
 .day-header {
-    text-align: center; /* 텍스트를 가운데 정렬 */
-    font-weight: bold; /* 텍스트를 굵게 설정 */
-    margin: 0 auto; /* 좌우 마진을 자동으로 설정하여 가운데 배치 */
-    padding: 0; /* 내부 여백 제거 */
-    color: #333; /* 텍스트 색상을 회색(#333)으로 설정 */
-    width: 40px !important; /* 너비를 40px로 고정 */
-    height: 40px !important; /* 높이를 40px로 고정 */
-    min-width: 40px !important; /* 최소 너비를 40px로 설정 */
-    min-height: 40px !important; /* 최소 높이를 40px로 설정 */
-    aspect-ratio: 1/1 !important; /* 너비와 높이 비율을 1:1로 유지 */
-    line-height: 40px; /* 텍스트 세로 정렬을 위해 줄 높이를 40px로 설정 */
-    border: 1px solid #ccc; /* 1px 회색(#ccc) 테두리 추가 */
-    border-radius: 50%; /* 원형 테두리로 설정 */
-    background-color: #f8f8f8; /* 배경색을 밝은 회색(#f8f8f8)으로 설정 */
-    display: flex; /* 플렉스 레이아웃 사용 */
-    justify-content: center; /* 플렉스 항목을 수평 가운데 정렬 */
-    align-items: center; /* 플렉스 항목을 수직 가운데 정렬 */
+    text-align: center;
+    font-weight: bold;
+    margin: 0 auto;
+    padding: 0;
+    color: #333;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    aspect-ratio: 1/1 !important;
+    line-height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    background-color: #f8f8f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* 날짜 스타일 */
 .day {
-    text-align: center; /* 텍스트를 가운데 정렬 */
-    width: 40px !important; /* 너비를 40px로 고정 */
-    height: 40px !important; /* 높이를 40px로 고정 */
-    min-width: 40px !important; /* 최소 너비를 40px로 설정 */
-    min-height: 40px !important; /* 최소 높이를 40px로 설정 */
-    aspect-ratio: 1/1 !important; /* 너비와 높이 비율을 1:1로 유지 */
-    line-height: 40px; /* 텍스트 세로 정렬을 위해 줄 높이를 40px로 설정 */
-    border: 1px solid #ccc; /* 1px 회색(#ccc) 테두리 추가 */
-    border-radius: 50%; /* 원형 테두리로 설정 */
-    margin: 0 auto; /* 좌우 마진을 자동으로 설정하여 가운데 배치 */
-    background-color: #fff; /* 배경색을 흰색(#fff)으로 설정 */
-    color: #333; /* 텍스트 색상을 회색(#333)으로 설정 */
-    cursor: pointer; /* 마우스 오버 시 포인터 커서 표시 */
-    transition: background-color 0.2s, border 0.2s; /* 배경색과 테두리 변화를 0.2초 동안 부드럽게 전환 */
-    position: relative; /* 상대 위치 설정으로 자식 요소(예: 툴팁) 배치 가능 */
-    display: flex; /* 플렉스 레이아웃 사용 */
-    justify-content: center; /* 플렉스 항목을 수평 가운데 정렬 */
-    align-items: center; /* 플렉스 항목을 수직 가운데 정렬 */
-    z-index: 6000 !important; /* 요소의 스택 순서를 6000으로 설정하여 다른 요소 위에 표시 */
-    pointer-events: auto !important; /* 클릭 이벤트를 활성화 */
-    touch-action: manipulation !important; /* 터치 장치에서 조작 가능하도록 설정 */
-    padding: 10px !important; /* 내부 여백 10px 추가 */
-}
-
-/* 호버 시 툴팁 표시 */
-.day:not(.disabled):hover::before {
-    content: '숫자 오른쪽을 클릭해주세요'; /* 툴팁에 표시할 텍스트 */
-    position: absolute; /* 절대 위치로 툴팁 배치 */
-    right: 50px; /* 오른쪽에서 50px 떨어진 위치에 툴팁 배치 */
-    top: 0; /* 상단에 정렬 */
-    background-color: #333; /* 툴팁 배경색을 회색(#333)으로 설정 */
-    color: #fff; /* 툴팁 텍스트 색상을 흰색(#fff)으로 설정 */
-    padding: 5px 10px; /* 내부 여백 (상하 5px, 좌우 10px) */
-    border-radius: 4px; /* 모서리를 4px 둥글게 설정 */
-    font-size: 12px; /* 글자 크기 12px */
-    white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 설정 */
-    z-index: 7000; /* 툴팁의 스택 순서를 7000으로 설정하여 최상단에 표시 */
-    opacity: 0.9; /* 투명도를 90%로 설정 */
-    pointer-events: none; /* 툴팁이 클릭 이벤트를 방해하지 않도록 비활성화 */
-}
-
-/* 호버 및 터치 시 녹색 점 표시 */
-.day:not(.disabled):hover::after,
-.day:not(.disabled):active::after {
-    content: ''; /* 빈 콘텐츠로 점 생성 */
-    position: absolute; /* 절대 위치로 점 배치 */
-    width: 8px; /* 점의 너비 8px */
-    height: 8px; /* 점의 높이 8px */
-    background-color: #00ff00; /* 점 색상을 초록색(#00ff00)으로 설정 */
-    border-radius: 50%; /* 원형으로 설정 */
-    left: -10px; /* 왼쪽에서 10px 떨어진 위치 */
-    top: 20px; /* 상단에서 20px 떨어진 위치 */
-    z-index: 7000; /* 점의 스택 순서를 7000으로 설정 */
-    opacity: 1; /* 초기 투명도 100% */
-    animation: fadeOut 1s forwards; /* 1초 동안 fadeOut 애니메이션 적용 후 유지 */
-}
-
-/* 페이드아웃 애니메이션 */
-@keyframes fadeOut {
-    0% { opacity: 1; } /* 애니메이션 시작 시 투명도 100% */
-    100% { opacity: 0; } /* 애니메이션 종료 시 투명도 0% */
+    text-align: center;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    aspect-ratio: 1/1 !important;
+    line-height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    margin: 0 auto;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 6000 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    padding: 10px !important;
 }
 
 /* 선택된 날짜 (빨간 테두리 및 배경색) */
 .day.selected {
-    border: 2px solid #ff4444 !important; /* 2px 빨간색(#ff4444) 테두리 추가 */
-    font-weight: bold !important; /* 텍스트를 굵게 설정 */
-    background-color: #ffe6e6 !important; /* 배경색을 밝은 빨간색(#ffe6e6)으로 설정 */
+    border: 2px solid #ff4444 !important;
+    font-weight: bold !important;
+    background-color: #ffe6e6 !important;
 }
 
-/* 체크박스 스타일 */
-.stCheckbox {
-    position: absolute; /* 절대 위치로 체크박스 배치 */
-    width: 40px !important; /* 너비를 40px로 고정 */
-    height: 40px !important; /* 높이를 40px로 고정 */
-    left: 0 !important; /* 왼쪽 끝에 정렬 */
-    top: 0 !important; /* 상단 끝에 정렬 */
-    z-index: 6500 !important; /* 스택 순서를 6500으로 설정 */
-    opacity: 0 !important; /* 투명도를 0으로 설정하여 숨김 */
-    pointer-events: auto !important; /* 클릭 이벤트를 활성화 */
-    cursor: pointer; /* 마우스 오버 시 포인터 커서 표시 */
+/* Streamlit 버튼과 폼 숨기기 */
+div[data-testid="stButton"] {
+    display: none !important;
 }
 
-.stCheckbox > div > div {
-    display: block !important; /* 하위 div를 블록 요소로 표시 */
-    width: 40px !important; /* 너비를 40px로 고정 */
-    height: 40px !important; /* 높이를 40px로 고정 */
-    border: none !important; /* 테두리 제거 */
-    background-color: transparent !important; /* 배경색을 투명으로 설정 */
+div[data-testid="stForm"] {
+    display: none !important;
 }
 
 /* 결과 텍스트 스타일 */
 .result-text {
-    margin: 10px 0; /* 상하 마진 10px, 좌우 마진 0px */
-    padding: 10px; /* 내부 여백 10px */
-    border-left: 4px solid #36A2EB; /* 왼쪽에 4px 파란색(#36A2EB) 테두리 추가 */
-    background-color: #f9f9f9; /* 배경색을 밝은 회색(#f9f9f9)으로 설정 */
+    margin: 10px 0;
+    padding: 10px;
+    border-left: 4px solid #36A2EB;
+    background-color: #f9f9f9;
 }
 
 /* 모바일 스타일 */
 @media (max-width: 767px) {
     div[data-testid="stHorizontalBlock"] {
-        display: grid !important; /* 모바일에서도 그리드 레이아웃 유지 */
-        grid-template-columns: repeat(7, 1fr) !important; /* 7열 구조 유지 */
-        gap: 2px !important; /* 열 사이 간격을 2px로 설정 */
-        justify-content: flex-start !important; /* 항목을 왼쪽에서 시작 */
-        margin-left: 0; /* 왼쪽 마진 제거 */
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        gap: 2px !important;
+        justify-content: flex-start !important;
+        margin-left: 0;
     }
     div[data-testid="stMarkdownContainer"] {
-        display: flex !important; /* 플렉스 레이아웃 유지 */
-        justify-content: center !important; /* 수평 가운데 정렬 */
-        align-items: center !important; /* 수직 가운데 정렬 */
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
     div[data-testid="stMarkdownContainer"]:not(:has(.day-header)):not(:has(.day)) {
-        justify-content: flex-start !important; /* 요일/날짜가 없는 경우 왼쪽 정렬 */
+        justify-content: flex-start !important;
+        flex-direction: column !important;
     }
     .day {
-        width: 40px !important; /* 너비 40px 유지 */
-        height: 40px !important; /* 높이 40px 유지 */
-        min-width: 40px !important; /* 최소 너비 40px */
-        min-height: 40px !important; /* 최소 높이 40px */
-        aspect-ratio: 1/1 !important; /* 비율 1:1 유지 */
-        line-height: 40px !important; /* 줄 높이 40px */
-        font-size: 1em; /* 기본 글자 크기 유지 */
-        margin: 2px auto !important; /* 상하 2px, 좌우 자동 마진 */
-        padding: 15px !important; /* 내부 여백 15px */
-        touch-action: manipulation !important; /* 터치 조작 가능 */
-    }
-    .day:not(.disabled):hover::after,
-    .day:not(.disabled):active::after {
-        left: -10px; /* 왼쪽에서 10px */
-        top: 20px; /* 상단에서 20px */
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        aspect-ratio: 1/1 !important;
+        line-height: 40px !important;
+        font-size: 1em;
+        margin: 2px auto !important;
+        padding: 15px !important;
+        touch-action: manipulation !important;
     }
     .day.selected {
-        border: 2px solid #ff4444 !important; /* 2px 빨간색 테두리 */
-        font-weight: bold !important; /* 텍스트 굵게 */
-        background-color: #ffe6e6 !important; /* 밝은 빨간색 배경 */
-    }
-    .stCheckbox {
-        width: 40px !important; /* 너비 40px */
-        height: 40px !important; /* 높이 40px */
-        left: 0 !important; /* 왼쪽 끝 */
-        top: 0 !important; /* 상단 끝 */
-    }
-    .stCheckbox > div > div {
-        width: 40px !important; /* 너비 40px */
-        height: 40px !important; /* 높이 40px */
+        border: 2px solid #ff4444 !important;
+        font-weight: bold !important;
+        background-color: #ffe6e6 !important;
     }
     .result-text {
-        padding: 8px; /* 내부 여백 8px */
+        padding: 8px;
     }
 }
 
 /* 데스크탑 스타일 */
 @media (min-width: 768px) {
     div[data-testid="stHorizontalBlock"] {
-        max-width: 600px !important; /* 최대 너비 600px로 제한 */
-        margin: 0 !important; /* 마진 제거 */
-        justify-content: flex-start !important; /* 왼쪽 정렬 */
+        max-width: 600px !important;
+        margin: 0 !important;
+        justify-content: flex-start !important;
     }
     .day.selected {
-        border: 2px solid #ff4444 !important; /* 2px 빨간색 테두리 */
-        font-weight: bold !important; /* 텍스트 굵게 */
-        background-color: #ffe6e6 !important; /* 밝은 빨간색 배경 */
+        border: 2px solid #ff4444 !important;
+        font-weight: bold !important;
+        background-color: #ffe6e6 !important;
     }
 }
 
 /* 모든 텍스트 왼쪽 정렬 */
 .stMarkdown, .stText, .stHeader {
-    text-align: left !important; /* 모든 텍스트를 왼쪽으로 정렬 */
+    text-align: left !important;
 }
 
 /* 다크 모드 지원 */
 @media (prefers-color-scheme: dark), [data-theme="dark"] {
     .day-header {
-        color: #ddd; /* 텍스트 색상을 밝은 회색(#ddd)으로 */
-        background-color: #444; /* 배경색을 어두운 회색(#444)으로 */
+        color: #ddd;
+        background-color: #444;
     }
     .day-header.weekend {
-        color: #ff6666; /* 주말 텍스트 색상을 밝은 빨간색(#ff6666)으로 */
+        color: #ff6666;
     }
     .day {
-        background-color: #333; /* 배경색을 어두운 회색(#333)으로 */
-        color: #ddd; /* 텍스트 색상을 밝은 회색(#ddd)으로 */
-        border-color: #888; /* 테두리 색상을 회색(#888)으로 */
+        background-color: #333;
+        color: #ddd;
+        border-color: #888;
     }
     .day:hover:not(.disabled) {
-        background-color: #444; /* 호버 시 배경색을 어두운 회색(#444)으로 */
-    }
-    .day:not(.disabled):hover::before {
-        background-color: #555; /* 툴팁 배경색을 더 어두운 회색(#555)으로 */
-        color: #fff; /* 툴팁 텍스트 색상을 흰색(#fff)으로 */
+        background-color: #444;
     }
     .day.disabled {
-        background-color: #555; /* 비활성화된 날짜 배경색을 어두운 회색(#555)으로 */
-        color: #888; /* 텍스트 색상을 회색(#888)으로 */
+        background-color: #555;
+        color: #888;
     }
     .day.selected {
-        border: 2px solid #ff6666 !important; /* 2px 밝은 빨간색(#ff6666) 테두리 */
-        font-weight: bold !important; /* 텍스트 굵게 */
-        background-color: #4a2a2a !important; /* 어두운 빨간색 배경(#4a2a2a) */
+        border: 2px solid #ff6666 !important;
+        font-weight: bold !important;
+        background-color: #4a2a2a !important;
     }
     .day.current {
-        border-color: #6666ff; /* 현재 날짜 테두리 색상을 파란색(#6666ff)으로 */
+        border-color: #6666ff;
     }
     .result-text {
-        background-color: #2a2a2a; /* 배경색을 어두운 회색(#2a2a2a)으로 */
-        border-left-color: #4CAF50; /* 왼쪽 테두리 색상을 초록색(#4CAF50)으로 */
-    }
-    .stCheckbox > div > div {
-        background-color: transparent !important; /* 체크박스 배경을 투명으로 유지 */
+        background-color: #2a2a2a;
+        border-left-color: #4CAF50;
     }
 }
 
 .day:hover:not(.disabled) {
-    background-color: #f0f0f0; /* 호버 시 배경색을 밝은 회색(#f0f0f0)으로 */
+    background-color: #f0f0f0;
 }
 
 .day.current {
-    border: 2px solid #4444ff; /* 현재 날짜에 2px 파란색(#4444ff) 테두리 */
+    border: 2px solid #4444ff;
 }
 
 .day.disabled {
-    background-color: #e0e0e0; /* 비활성화된 날짜 배경색을 밝은 회색(#e0e0e0)으로 */
-    color: #888; /* 텍스트 색상을 회색(#888)으로 */
-    cursor: not-allowed; /* 마우스 오버 시 금지 커서 표시 */
+    background-color: #e0e0e0;
+    color: #888;
+    cursor: not-allowed;
 }
-
