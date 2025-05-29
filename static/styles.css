@@ -1,4 +1,3 @@
-# static/styles.css
 /* 컨테이너 스타일 */
 div[data-testid="stHorizontalBlock"] {
     display: grid !important;
