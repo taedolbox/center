@@ -22,7 +22,6 @@ div[data-testid="stMarkdownContainer"] {
 /* 요일과 날짜를 포함하지 않은 stMarkdownContainer */
 div[data-testid="stMarkdownContainer"]:not(:has(.day-header)):not(:has(.day)) {
     justify-content: flex-start !important;
-    flex-direction: column !important;
 }
 
 /* 요일 헤더 스타일 */
@@ -61,6 +60,7 @@ div[data-testid="stMarkdownContainer"]:not(:has(.day-header)):not(:has(.day)) {
     background-color: #fff;
     color: #333;
     cursor: pointer;
+    transition: background-color 0.2s, border 0.2s;
     position: relative;
     display: flex;
     justify-content: center;
@@ -71,6 +71,45 @@ div[data-testid="stMarkdownContainer"]:not(:has(.day-header)):not(:has(.day)) {
     padding: 10px !important;
 }
 
+/* 호버 시 툴팁 표시 */
+.day:not(.disabled):hover::before {
+    content: '숫자 오른쪽을 클릭해주세요';
+    position: absolute;
+    right: 50px; /* 툴팁 오른쪽 끝을 원 왼쪽에 맞춤 */
+    top: 0;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 7000;
+    opacity: 0.9;
+    pointer-events: none; /* 툴팁이 클릭 방해 안 하도록 */
+}
+
+/* 호버 및 터치 시 녹색 점 표시 */
+.day:not(.disabled):hover::after,
+.day:not(.disabled):active::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #00ff00;
+    border-radius: 50%;
+    left: -10px;
+    top: 20px;
+    z-index: 7000;
+    opacity: 1;
+    animation: fadeOut 1s forwards;
+}
+
+/* 페이드아웃 애니메이션 */
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
 /* 선택된 날짜 (빨간 테두리 및 배경색) */
 .day.selected {
     border: 2px solid #ff4444 !important;
@@ -78,13 +117,25 @@ div[data-testid="stMarkdownContainer"]:not(:has(.day-header)):not(:has(.day)) {
     background-color: #ffe6e6 !important;
 }
 
-/* Streamlit 버튼과 폼 숨기기 */
-div[data-testid="stButton"] {
-    display: none !important;
+/* 체크박스 스타일 */
+.stCheckbox {
+    position: absolute;
+    width: 40px !important;
+    height: 40px !important;
+    left: 0 !important;
+    top: 0 !important;
+    z-index: 6500 !important;
+    opacity: 0 !important;
+    pointer-events: auto !important;
+    cursor: pointer;
 }
 
-div[data-testid="stForm"] {
-    display: none !important;
+.stCheckbox > div > div {
+    display: block !important;
+    width: 40px !important;
+    height: 40px !important;
+    border: none !important;
+    background-color: transparent !important;
 }
 
 /* 결과 텍스트 스타일 */
@@ -111,7 +162,6 @@ div[data-testid="stForm"] {
     }
     div[data-testid="stMarkdownContainer"]:not(:has(.day-header)):not(:has(.day)) {
         justify-content: flex-start !important;
-        flex-direction: column !important;
     }
     .day {
         width: 40px !important;
@@ -125,10 +175,25 @@ div[data-testid="stForm"] {
         padding: 15px !important;
         touch-action: manipulation !important;
     }
+    .day:not(.disabled):hover::after,
+    .day:not(.disabled):active::after {
+        left: -10px;
+        top: 20px;
+    }
     .day.selected {
         border: 2px solid #ff4444 !important;
         font-weight: bold !important;
         background-color: #ffe6e6 !important;
+    }
+    .stCheckbox {
+        width: 40px !important;
+        height: 40px !important;
+        left: 0 !important;
+        top: 0 !important;
+    }
+    .stCheckbox > div > div {
+        width: 40px !important;
+        height: 40px !important;
     }
     .result-text {
         padding: 8px;
@@ -171,6 +236,10 @@ div[data-testid="stForm"] {
     .day:hover:not(.disabled) {
         background-color: #444;
     }
+    .day:not(.disabled):hover::before {
+        background-color: #555;
+        color: #fff;
+    }
     .day.disabled {
         background-color: #555;
         color: #888;
@@ -187,6 +256,9 @@ div[data-testid="stForm"] {
         background-color: #2a2a2a;
         border-left-color: #4CAF50;
     }
+    .stCheckbox > div > div {
+        background-color: transparent !important;
+    }
 }
 
 .day:hover:not(.disabled) {
@@ -202,3 +274,4 @@ div[data-testid="stForm"] {
     color: #888;
     cursor: not-allowed;
 }
+이것 라인마다 역활에 대한 주석 달아줘
