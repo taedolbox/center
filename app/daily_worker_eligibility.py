@@ -10,8 +10,9 @@ calendar.setfirstweekday(calendar.SUNDAY)
 
 # KST 시간대 설정
 KST = pytz.timezone('Asia/Seoul')
-current_datetime = datetime(2025, 5, 28, 8, 44, tzinfo=KST)
-current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오전 %I:%M KST')
+# 현재 KST 시간 동적으로 가져오기
+current_datetime = datetime.now(KST)
+current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오전/오후 %I:%M KST')
 
 # 스타일시트 로드
 with open("static/styles.css") as f:
