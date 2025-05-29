@@ -113,7 +113,7 @@ def render_calendar(apply_date):
                                         # 세션 상태의 selected_dates를 업데이트합니다.
                                         st.session_state.selected_dates = selected_dates
                                         # 디버깅 로그를 출력합니다.
-                                        #st.write(f"Debug: Date {date_obj}, Selected: {checkbox_value}, Class: {class_name}")
+                                        st.write(f"Debug: Date {date_obj}, Selected: {checkbox_value}, Class: {class_name}")
                                         st.rerun() # 앱을 재실행하여 UI를 업데이트합니다. (선택 상태 반영)
 
     # 선택된 근무일자 표시
