@@ -10,8 +10,8 @@ calendar.setfirstweekday(calendar.SUNDAY)
 
 # KST 시간대 설정
 KST = pytz.timezone('Asia/Seoul')
-current_datetime = datetime(2025, 5, 29, 20, 15, tzinfo=KST)
-current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오후 %H:%M KST')
+# current_datetime = datetime(2025, 5, 29, 20, 15, tzinfo=KST)
+# current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오후 %H:%M KST')
 
 # 스타일시트 로드 (캐시 방지 쿼리 추가)
 timestamp = time.time()
@@ -29,9 +29,10 @@ def render_calendar(apply_date):
         st.session_state.selected_dates = set()
 
     selected_dates = st.session_state.selected_dates
-    current_date = current_datetime.date()
+    current_date = datetime.now(KST).date()
     start_date = (apply_date.replace(day=1) - pd.DateOffset(months=1)).replace(day=1).date()
     months = sorted(set((d.year, d.month) for d in pd.date_range(start=start_date, end=apply_date)))
+
 
     for year, month in months:
         st.markdown(f"### {year}년 {month}월", unsafe_allow_html=True)
@@ -104,6 +105,10 @@ def daily_worker_eligibility_app():
     """일용근로자 수급자격 요건 모의계산 앱."""
     st.header("일용근로자 수급자격 요건 모의계산")
 
+    # 오늘 날짜로 수정을 했습니다: Streamlit 앱이 재실행될 때마다 현재 날짜와 시간을 KST 기준으로 정확히 가져옵니다.
+    current_datetime = datetime.now(KST)
+    current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오후 %I:%M KST')
+
     # 현재 날짜 및 시간 표시
     st.markdown(f"**오늘 날짜와 시간**: {current_time_korean}", unsafe_allow_html=True)
 
@@ -114,6 +119,7 @@ def daily_worker_eligibility_app():
     st.markdown("---")
 
     # 수급자격 신청일 선택
+    # 오늘 날짜로 수정을 했습니다: st.date_input의 기본값도 현재 날짜를 따르도록 합니다.
     apply_date = st.date_input("수급자격 신청일을 선택하세요", value=current_datetime.date(), key="apply_date_input")
 
     # 날짜 범위 및 시작일 가져오기
