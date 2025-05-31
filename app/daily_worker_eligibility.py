@@ -41,15 +41,18 @@ def render_calendar(apply_date):
 
         # 요일 헤더
         with st.container():
+            day_headers = ["일", "월", "화", "수", "목", "금", "토"]
             cols = st.columns(7, gap="small")
-            for i, day in enumerate(days_of_week):
+            for i, day_name in enumerate(day_headers):
                 with cols[i]:
                     class_name = "day-header"
-                    if i == 0 or i == 6:
-                        class_name += " weekend"
-                    st.markdown(f'<div class="{class_name}">{day}</div>', unsafe_allow_html=True)
-
+                    if i == 0:
+                        class_name += " sunday"
+                    elif i == 6:
+                        class_name += " saturday"
+                    st.markdown(f'<div class="{class_name}">{day_name}</div>', unsafe_allow_html=True)
         # 날짜 렌더링
+        # 날짜 렌더링 (변경된 부분 포함)
         for week in cal:
             with st.container():
                 cols = st.columns(7, gap="small")
@@ -70,29 +73,30 @@ def render_calendar(apply_date):
                             class_name += " current"
                         if is_disabled:
                             class_name += " disabled"
+                        if i == 0:
+                            class_name += " sunday"
+                        elif i == 6:
+                            class_name += " saturday"
 
                         with st.container():
                             if is_disabled:
                                 st.markdown(f'<div class="{class_name}">{day}</div>', unsafe_allow_html=True)
                             else:
-                                with st.container():
-                                    checkbox_key = f"date_{date_obj}"
-                                    checkbox_value = st.checkbox(
-                                        "", key=checkbox_key, value=is_selected, label_visibility="hidden"
-                                    )
-                                    st.markdown(
-                                        f'<div class="{class_name}" data-date="{date_obj}">{day}</div>',
-                                        unsafe_allow_html=True
-                                    )
-                                    if checkbox_value != is_selected:
-                                        if checkbox_value:
-                                            selected_dates.add(date_obj)
-                                        else:
-                                            selected_dates.discard(date_obj)
-                                        st.session_state.selected_dates = selected_dates
-                                        # 디버깅 로그
-                                        #st.write(f"Debug: Date {date_obj}, Selected: {checkbox_value}, Class: {class_name}")
-                                        st.rerun()
+                                checkbox_key = f"date_{date_obj}"
+                                checkbox_value = st.checkbox(
+                                    "", key=checkbox_key, value=is_selected, label_visibility="hidden"
+                                )
+                                st.markdown(
+                                    f'<div class="{class_name}" data-date="{date_obj}">{day}</div>',
+                                    unsafe_allow_html=True
+                                )
+                                if checkbox_value != is_selected:
+                                    if checkbox_value:
+                                        selected_dates.add(date_obj)
+                                    else:
+                                        selected_dates.discard(date_obj)
+                                    st.session_state.selected_dates = selected_dates
+                                    st.rerun()        
 
     # 선택된 근무일자 표시
     if selected_dates:
