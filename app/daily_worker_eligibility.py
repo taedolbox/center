@@ -10,17 +10,19 @@ calendar.setfirstweekday(calendar.SUNDAY)
 
 # KST 시간대 설정
 KST = pytz.timezone('Asia/Seoul')
-# current_datetime = datetime(2025, 5, 29, 20, 15, tzinfo=KST)
-# current_time_korean = current_datetime.strftime('%Y년 %m월 %d일 %A 오후 %H:%M KST')
 
 # 스타일시트 로드 (캐시 방지 쿼리 추가)
+# 이 부분은 변경 없음. styles.css 파일이 정상적으로 로드되는지 확인합니다.
 timestamp = time.time()
 with open("static/styles.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 def get_date_range(apply_date):
     """신청일을 기준으로 이전 달 초일부터 신청일까지의 날짜 범위를 반환합니다."""
-    start_date = (apply_date.replace(day=1) - pd.DateOffset(months=1)).replace(day=1).date()
+    # 신청일이 포함된 달의 첫 날
+    start_of_apply_month = apply_date.replace(day=1)
+    # 신청일 직전 달의 첫 날
+    start_date = (start_of_apply_month - pd.DateOffset(months=1)).replace(day=1).date()
     return [d.date() for d in pd.date_range(start=start_date, end=apply_date)], start_date
 
 def render_calendar(apply_date):
@@ -30,41 +32,45 @@ def render_calendar(apply_date):
 
     selected_dates = st.session_state.selected_dates
     current_date = datetime.now(KST).date()
-    start_date = (apply_date.replace(day=1) - pd.DateOffset(months=1)).replace(day=1).date()
-    months = sorted(set((d.year, d.month) for d in pd.date_range(start=start_date, end=apply_date)))
+    
+    # 달력에 표시할 월 범위 결정: 신청일 직전 달 초일부터 신청일이 포함된 달까지
+    start_of_prev_month = (apply_date.replace(day=1) - pd.DateOffset(months=1)).replace(day=1).date()
+    
+    # apply_date까지 포함하는 월들을 추출
+    months_to_render = sorted(set((d.year, d.month) for d in pd.date_range(start=start_of_prev_month, end=apply_date)))
 
-
-    for year, month in months:
+    for year, month in months_to_render:
         st.markdown(f"### {year}년 {month}월", unsafe_allow_html=True)
         cal = calendar.monthcalendar(year, month)
-        days_of_week = ["일", "월", "화", "수", "목", "금", "토"]
-
-        # 요일 헤더
+        
+        # 요일 헤더 렌더링
         with st.container():
             day_headers = ["일", "월", "화", "수", "목", "금", "토"]
-            cols = st.columns(7, gap="small")
+            cols = st.columns(7, gap="small") # Streamlit의 컬럼 간격
             for i, day_name in enumerate(day_headers):
                 with cols[i]:
                     class_name = "day-header"
-                    if i == 0:
+                    if i == 0: # 일요일
                         class_name += " sunday"
-                    elif i == 6:
+                    elif i == 6: # 토요일
                         class_name += " saturday"
                     st.markdown(f'<div class="{class_name}">{day_name}</div>', unsafe_allow_html=True)
+
         # 날짜 렌더링
-        # 날짜 렌더링 (변경된 부분 포함)
         for week in cal:
             with st.container():
-                cols = st.columns(7, gap="small")
+                cols = st.columns(7, gap="small") # Streamlit의 컬럼 간격
                 for i, day in enumerate(week):
                     with cols[i]:
-                        if day == 0:
+                        if day == 0: # 해당 월에 속하지 않는 날짜 (빈 칸)
                             st.empty()
                             continue
+                        
                         date_obj = date(year, month, day)
                         is_selected = date_obj in selected_dates
                         is_current = date_obj == current_date
-                        is_disabled = date_obj > apply_date
+                        # 'is_disabled'는 신청일 이후의 날짜를 의미하며, 이 날짜는 선택할 수 없도록 합니다.
+                        is_disabled = date_obj > apply_date 
 
                         class_name = "day"
                         if is_selected:
@@ -72,31 +78,38 @@ def render_calendar(apply_date):
                         if is_current:
                             class_name += " current"
                         if is_disabled:
-                            class_name += " disabled"
-                        if i == 0:
+                            class_name += " disabled" # disabled 클래스 추가
+                        if i == 0: # 일요일
                             class_name += " sunday"
-                        elif i == 6:
+                        elif i == 6: # 토요일
                             class_name += " saturday"
-
-                        with st.container():
-                            if is_disabled:
-                                st.markdown(f'<div class="{class_name}">{day}</div>', unsafe_allow_html=True)
+                        
+                        # --- 핵심 변경 부분: 모든 날짜에 대해 동일한 HTML 구조를 사용 ---
+                        # Streamlit 체크박스를 항상 렌더링하되, disabled 상태일 때는 비활성화합니다.
+                        # CSS에서 이 체크박스를 숨겨서 시각적으로는 보이지 않게 합니다.
+                        checkbox_key = f"date_{date_obj}"
+                        checkbox_value = st.checkbox(
+                            "",
+                            key=checkbox_key,
+                            value=is_selected,
+                            label_visibility="hidden",
+                            disabled=is_disabled # 신청일 이후 날짜는 체크박스 비활성화
+                        )
+                        
+                        # 날짜 숫자(원형)를 나타내는 div는 항상 렌더링
+                        st.markdown(
+                            f'<div class="{class_name}" data-date="{date_obj}">{day}</div>',
+                            unsafe_allow_html=True
+                        )
+                        
+                        # 체크박스 값 변경 감지 (비활성화되지 않은 경우에만)
+                        if not is_disabled and checkbox_value != is_selected:
+                            if checkbox_value:
+                                selected_dates.add(date_obj)
                             else:
-                                checkbox_key = f"date_{date_obj}"
-                                checkbox_value = st.checkbox(
-                                    "", key=checkbox_key, value=is_selected, label_visibility="hidden"
-                                )
-                                st.markdown(
-                                    f'<div class="{class_name}" data-date="{date_obj}">{day}</div>',
-                                    unsafe_allow_html=True
-                                )
-                                if checkbox_value != is_selected:
-                                    if checkbox_value:
-                                        selected_dates.add(date_obj)
-                                    else:
-                                        selected_dates.discard(date_obj)
-                                    st.session_state.selected_dates = selected_dates
-                                    st.rerun()        
+                                selected_dates.discard(date_obj)
+                            st.session_state.selected_dates = selected_dates
+                            st.rerun() # 상태 변경 시 Streamlit 앱 새로고침
 
     # 선택된 근무일자 표시
     if selected_dates:
@@ -131,7 +144,7 @@ def daily_worker_eligibility_app():
 
     st.markdown("---")
     st.markdown("#### 근무일 선택 달력")
-    selected_dates = render_calendar(apply_date)
+    selected_dates = render_calendar(apply_date) # 달력 렌더링 함수 호출
     st.markdown("---")
 
     # 조건 1 계산
@@ -171,11 +184,13 @@ def daily_worker_eligibility_app():
     if not condition1:
         st.markdown("### 📅 조건 1을 충족하려면 언제 신청해야 할까요?")
         found_suggestion = False
-        for i in range(1, 31):
+        for i in range(1, 31): # 향후 30일까지 확인
             future_date = apply_date + timedelta(days=i)
+            # 미래 날짜 기준으로 날짜 범위 재계산
             date_range_future_objects, _ = get_date_range(future_date)
             total_days_future = len(date_range_future_objects)
             threshold_future = total_days_future / 3
+            # 미래 날짜까지의 근무일만 카운트
             worked_days_future = sum(1 for d in selected_dates if d <= future_date)
 
             if worked_days_future < threshold_future:
@@ -198,9 +213,10 @@ def daily_worker_eligibility_app():
     # 조건 2 불충족 시 미래 신청일 제안
     if not condition2:
         st.markdown("### 📅 조건 2를 충족하려면 언제 신청해야 할까요?")
+        # 선택된 날짜 중 신청일 이전의 가장 최근 근무일
         last_worked_day = max((d for d in selected_dates if d < apply_date), default=None)
         if last_worked_day:
-            suggested_date = last_worked_day + timedelta(days=15)
+            suggested_date = last_worked_day + timedelta(days=15) # 마지막 근무일 + 14일 + 1일
             st.markdown(
                 f'<div class="result-text">'
                 f'<p>✅ <b>{suggested_date.strftime("%Y-%m-%d")}</b> 이후에 신청하면 조건 2를 충족할 수 있습니다.</p>'
@@ -216,7 +232,7 @@ def daily_worker_eligibility_app():
             )
 
     st.subheader("📌 최종 판단")
-    # 일반일용근로자: 조건 1
+    # 일반일용근로자: 조건 1만 만족하면 됨
     if condition1:
         st.markdown(
             f'<div class="result-text">'
@@ -234,7 +250,7 @@ def daily_worker_eligibility_app():
             unsafe_allow_html=True
         )
 
-    # 건설일용근로자: 조건 1과 2
+    # 건설일용근로자: 조건 1과 조건 2 모두 만족해야 함
     if condition1 and condition2:
         st.markdown(
             f'<div class="result-text">'
@@ -258,3 +274,4 @@ def daily_worker_eligibility_app():
 
 if __name__ == "__main__":
     daily_worker_eligibility_app()
+
