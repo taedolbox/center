@@ -22,7 +22,7 @@ def wage_delay_app():
                 st.session_state.wage_step += 1
             st.rerun()
     else:
-        st.success("✅ 실업급여 수급 가능성이 있습니다.\n체불 입증 자료와 함께 고용노동청 또는 고용센터에 문의하세요.")
+        st.success("✅ 실업급여 수급 가능성이 있습니다.\n체불 입증 자료와 함께 고용센터에 방문하여 구체적인 상담을 받으시기 바라니다.")
 
     if st.button("처음으로", key="reset_wage"):
         st.session_state.wage_step = 0
