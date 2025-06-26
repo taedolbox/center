@@ -259,10 +259,6 @@ div[data-testid="stMarkdownContainer"]:not(:has(.day-header)):not(:has(.day)) {
 .day:hover:not(.disabled) {
     background-color: #f0f0f0 !important;
 }
-/* 오늘 날짜 표시 */
-.day.current {
-    border: 2px solid #4444ff !important;
-}
 /* 비활성화된 날짜 스타일 */
 .day.disabled {
     background-color: #e0e0e0 !important;
