@@ -1,117 +1,170 @@
-# main.py
-
 import streamlit as st
-from app.daily_worker_eligibility import daily_worker_eligibility_app
-from app.early_reemployment import early_reemployment_app
-from app.remote_assignment import remote_assignment_app
-from app.wage_delay import wage_delay_app
-from app.unemployment_recognition import unemployment_recognition_app
-from app.questions import (
-    get_employment_questions,
-    get_self_employment_questions,
-    get_remote_assignment_questions,
-    get_wage_delay_questions,
-    get_daily_worker_eligibility_questions
-)
+from datetime import datetime, timedelta
+import json
 
-def main():
-    st.set_page_config(page_title="실업급여 지원 시스템", page_icon="💼", layout="centered")
+def daily_worker_eligibility_app():
+    st.markdown(
+        "<span style='font-size:22px; font-weight:600;'>🏗️ 일용직 신청 가능 시점 판단</span>",
+        unsafe_allow_html=True
+    )
 
-    # Apply custom CSS
-    with open("static/styles.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    today_kst = datetime.utcnow() + timedelta(hours=9)
+    input_date = st.date_input("📅 기준 날짜 선택", today_kst.date())
 
-    # Menu definitions
-    all_menus = [
-        "임금 체불 판단",
-        "원거리 발령 판단",
-        "실업인정",
-        "조기재취업수당",
-        "실업급여 신청 가능 시점",
-        "일용직(건설일용포함)"
-    ]
-    menu_functions = {
-        "임금 체불 판단": wage_delay_app,
-        "원거리 발령 판단": remote_assignment_app,
-        "실업인정": unemployment_recognition_app,
-        "조기재취업수당": early_reemployment_app,
-        "실업급여 신청 가능 시점": lambda: st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다. 자세한 내용은 고용센터에 문의하세요 Luna 또는 고용센터에 문의하세요."),
-        "일용직(건설일용포함)": daily_worker_eligibility_app
+    first_day_prev_month = (input_date.replace(day=1) - timedelta(days=1)).replace(day=1)
+    last_day = input_date
+
+    cal_dates = []
+    current_date = first_day_prev_month
+    while current_date <= last_day:
+        cal_dates.append(current_date)
+        current_date += timedelta(days=1)
+
+    calendar_groups = {}
+    for date in cal_dates:
+        ym = date.strftime("%Y-%m")
+        if ym not in calendar_groups:
+            calendar_groups[ym] = []
+        calendar_groups[ym].append(date)
+
+    calendar_dates_json = json.dumps([d.strftime("%Y-%m-%d") for d in cal_dates])
+    fourteen_days_prior_end = (input_date - timedelta(days=1)).strftime("%Y-%m-%d")
+    fourteen_days_prior_start = (input_date - timedelta(days=14)).strftime("%Y-%m-%d")
+
+    # 조건 1 충족 기준 날짜 계산
+    next_possible1_date = (input_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+    next_possible1_str = next_possible1_date.strftime("%Y-%m-%d")
+
+    calendar_html = "<div id='calendar-container'>"
+
+    for ym, dates in calendar_groups.items():
+        year, month = ym.split("-")
+        calendar_html += "<h4>" + year + "년 " + month + "월</h4>"
+        calendar_html += """
+        <div class="calendar">
+            <div class="day-header">일</div>
+            <div class="day-header">월</div>
+            <div class="day-header">화</div>
+            <div class="day-header">수</div>
+            <div class="day-header">목</div>
+            <div class="day-header">금</div>
+            <div class="day-header">토</div>
+        """
+        start_day_offset = (dates[0].weekday() + 1) % 7
+        for _ in range(start_day_offset):
+            calendar_html += '<div class="empty-day"></div>'
+        for date in dates:
+            day_num = date.day
+            date_str = date.strftime("%m/%d")
+            calendar_html += '<div class="day" data-date="' + date_str + '" onclick="toggleDate(this)">' + str(day_num) + '</div>'
+        calendar_html += "</div>"
+
+    calendar_html += """
+    </div>
+    <p id="selectedDatesText"></p>
+    <div id="resultContainer"></div>
+
+    <style>
+    .calendar {
+        display: grid; grid-template-columns: repeat(7, 40px); grid-gap: 5px;
+        margin-bottom: 20px; background: #fff; padding: 10px; border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    all_questions = {
-        "임금 체불 판단": get_wage_delay_questions(),
-        "원거리 발령 판단": get_remote_assignment_questions(),
-        "실업인정": [],
-        "조기재취업수당": get_employment_questions() + get_self_employment_questions(),
-        "일용직(건설일용포함)": get_daily_worker_eligibility_questions(),
-        "실업급여 신청 가능 시점": []
+    .day-header, .empty-day {
+        width: 40px; height: 40px; line-height: 40px; text-align: center;
+        font-weight: bold; color: #555;
+    }
+    .day-header { background: #e0e0e0; border-radius: 5px; font-size: 14px; }
+    .empty-day { background: transparent; border: none; }
+    .day {
+        width: 40px; height: 40px; line-height: 40px; text-align: center;
+        border: 1px solid #ddd; border-radius: 5px; cursor: pointer; user-select: none;
+        transition: background 0.1s ease, border 0.1s ease; font-size: 16px; color: #333;
+    }
+    .day:hover { background: #f0f0f0; }
+    .day.selected { border: 2px solid #2196F3; background: #2196F3; color: #fff; font-weight: bold; }
+    </style>
+
+    <script>
+    const CALENDAR_DATES = """ + calendar_dates_json + """;
+    const FOURTEEN_DAYS_START = '""" + fourteen_days_prior_start + """';
+    const FOURTEEN_DAYS_END = '""" + fourteen_days_prior_end + """';
+    const NEXT_POSSIBLE1_DATE = '""" + next_possible1_str + """';
+
+    function saveToLocalStorage(data) {
+        localStorage.setItem('selectedDates', JSON.stringify(data));
     }
 
-    # Sidebar search functionality
-    with st.sidebar:
-        st.markdown("### 🔍 검색")
-        search_query = st.text_input("메뉴 또는 질문을 검색하세요", key="search_query")
+    function calculateAndDisplayResult(selected) {
+        const totalDays = CALENDAR_DATES.length;
+        const threshold = totalDays / 3;
+        const workedDays = selected.length;
 
-        # Filter menus based on search query
-        filtered_menus = all_menus
-        if search_query:
-            search_query = search_query.lower()
-            filtered_menus = [
-                menu for menu in all_menus
-                if search_query in menu.lower() or
-                any(search_query in q.lower() for q in all_questions.get(menu, []))
-            ]
+        const fourteenDays = CALENDAR_DATES.filter(date => date >= FOURTEEN_DAYS_START && date <= FOURTEEN_DAYS_END);
+        const noWork14Days = fourteenDays.every(date => !selected.includes(date.substring(5).replace("-", "/")));
 
-        # Initialize selected_menu in session state
-        if "selected_menu" not in st.session_state:
-            query_params = st.query_params
-            url_menu_id = query_params.get("menu", [None])[0]
-            default_menu = None
-            if url_menu_id:
-                try:
-                    menu_idx = int(url_menu_id) - 1  # Convert to 0-based index
-                    if 0 <= menu_idx < len(all_menus):
-                        default_menu = all_menus[menu_idx]
-                except ValueError:
-                    pass
-            st.session_state.selected_menu = default_menu if default_menu in all_menus else filtered_menus[0] if filtered_menus else None
+        let nextPossible1 = "";
+        if (workedDays >= threshold) {
+            nextPossible1 = "📅 조건 1을 충족하려면 오늘 이후에 근로제공이 없는 경우 " + NEXT_POSSIBLE1_DATE + " 이후에 신청하면 조건 1을 충족할 수 있습니다.";
+        }
 
-        # Menu selection
-        if filtered_menus:
-            selected_menu = st.radio(
-                "📋 메뉴",
-                filtered_menus,
-                index=filtered_menus.index(st.session_state.selected_menu) if st.session_state.selected_menu in filtered_menus else 0,
-                key="menu_selector",
-                on_change=lambda: update_selected_menu(filtered_menus)
-            )
-            # Update session state and URL
-            if selected_menu != st.session_state.selected_menu:
-                st.session_state.selected_menu = selected_menu
-                menu_id = all_menus.index(selected_menu) + 1  # 1-based index
-                st.query_params["menu"] = str(menu_id)
-        else:
-            st.warning("검색 결과에 해당하는 메뉴가 없습니다.")
-            st.session_state.selected_menu = None
+        let nextPossible2 = "";
+        if (!noWork14Days) {
+            const nextPossibleDate = new Date(FOURTEEN_DAYS_END);
+            nextPossibleDate.setDate(nextPossibleDate.getDate() + 14);
+            const nextDateStr = nextPossibleDate.toISOString().split('T')[0];
+            nextPossible2 = "📅 조건 2를 충족하려면 오늘 이후에 근로제공이 없는 경우 " + nextDateStr + " 이후에 신청하면 조건 2를 충족할 수 있습니다.";
+        }
 
-    def update_selected_menu(filtered_menus):
-        selected_menu = st.session_state.menu_selector
-        if selected_menu in filtered_menus:
-            st.session_state.selected_menu = selected_menu
-            menu_id = all_menus.index(selected_menu) + 1
-            st.query_params["menu"] = str(menu_id)
+        const condition1Text = workedDays < threshold
+            ? "✅ 조건 1 충족: 근무일 수(" + workedDays + ") < 기준(" + threshold.toFixed(1) + ")"
+            : "❌ 조건 1 불충족: 근무일 수(" + workedDays + ") ≥ 기준(" + threshold.toFixed(1) + ")";
 
-    st.markdown("---")
+        const condition2Text = noWork14Days
+            ? "✅ 조건 2 충족: 신청일 직전 14일간(" + FOURTEEN_DAYS_START + " ~ " + FOURTEEN_DAYS_END + ") 근무 이력이 없음"
+            : "❌ 조건 2 불충족: 신청일 직전 14일간(" + FOURTEEN_DAYS_START + " ~ " + FOURTEEN_DAYS_END + ") 내 근무기록이 존재";
 
-    # Call function based on selected menu
-    if st.session_state.selected_menu:
-        menu_functions.get(st.session_state.selected_menu, lambda: st.info("메뉴를 선택하세요."))()
-    else:
-        st.info("왼쪽 사이드바에서 메뉴를 선택하거나 검색어를 입력하여 원하는 정보를 찾아보세요.")
+        const generalWorkerText = workedDays < threshold ? "✅ 신청 가능" : "❌ 신청 불가능";
+        const constructionWorkerText = (workedDays < threshold || noWork14Days) ? "✅ 신청 가능" : "❌ 신청 불가능";
 
-    st.markdown("---")
-    st.caption("ⓒ 2025 실업급여 도우미는 도움을 드리기 위한 목적입니다. 실제 가능 여부는 고용센터의 판단을 기준으로 합니다.")
-    st.markdown("[거주지역 고용센터 찾기](https://www.work24.go.kr/cm/c/d/0190/retrieveInstSrchLst.do)에서 자세한 정보를 확인하세요.")
+        const finalHtml = `
+            <h3>📌 조건 기준</h3>
+            <p>조건 1: 신청일이 속한 달의 직전 달 첫날부터 신청일까지 근무일 수가 전체 기간의 1/3 미만</p>
+            <p>조건 2: 건설일용근로자만 해당, 신청일 직전 14일간(신청일 제외) 근무 사실이 없어야 함</p>
+            <p>총 기간 일수: ` + totalDays + `일</p>
+            <p>1/3 기준: ` + threshold.toFixed(1) + `일</p>
+            <p>근무일 수: ` + workedDays + `일</p>
+            <h3>📌 조건 판단</h3>
+            <p>` + condition1Text + `</p>
+            <p>` + condition2Text + `</p>
+            ` + (nextPossible1 ? "<p>" + nextPossible1 + "</p>" : "") + `
+            ` + (nextPossible2 ? "<p>" + nextPossible2 + "</p>" : "") + `
+            <h3>📌 최종 판단</h3>
+            <p>✅ 일반일용근로자: ` + generalWorkerText + `</p>
+            <p>✅ 건설일용근로자: ` + constructionWorkerText + `</p>
+        `;
 
-if __name__ == "__main__":
-    main()
+        document.getElementById('resultContainer').innerHTML = finalHtml;
+    }
+
+    function toggleDate(element) {
+        element.classList.toggle('selected');
+        const selected = [];
+        const days = document.getElementsByClassName('day');
+        for (let i = 0; i < days.length; i++) {
+            if (days[i].classList.contains('selected')) {
+                selected.push(days[i].getAttribute('data-date'));
+            }
+        }
+        saveToLocalStorage(selected);
+        calculateAndDisplayResult(selected);
+        document.getElementById('selectedDatesText').innerText = "선택한 날짜: " + selected.join(', ') + " (" + selected.length + "일)";
+    }
+
+    window.onload = function() {
+        calculateAndDisplayResult([]);
+    };
+    </script>
+    """
+
+    st.components.v1.html(calendar_html, height=1200, scrolling=False)
