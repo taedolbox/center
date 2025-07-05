@@ -102,6 +102,9 @@ def main():
             st.warning("검색 결과에 해당하는 메뉴가 없습니다.")
             st.session_state.selected_menu = None
 
+        st.markdown("---")
+        st.markdown("[📌 고용센터 찾기](https://www.work24.go.kr/cm/c/d/0190/retrieveInstSrchLst.do)")
+
     st.markdown("---")
 
     if st.session_state.selected_menu:
@@ -111,10 +114,6 @@ def main():
         )()
     else:
         st.info("왼쪽 사이드바에서 메뉴를 선택하거나 검색어를 입력하세요.")
-
-    st.markdown("---")
-    st.caption("ⓒ 2025 실업급여 도우미는 도움을 드리기 위한 참고용입니다. 실제 가능 여부는 고용센터 판단을 따릅니다.")
-    st.markdown("[📌 고용센터 찾기](https://www.work24.go.kr/cm/c/d/0190/retrieveInstSrchLst.do)")
 
 if __name__ == "__main__":
     main()
