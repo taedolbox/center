@@ -155,19 +155,22 @@ def main():
         "일용직(건설일용포함)": daily_worker_eligibility_app
     }
 
-    # 메뉴와 표시될 제목을 한 곳에서 관리
-    # '메뉴 선택'은 여기에 포함시키지 않습니다.
-    menu_display_names = {
-        "임금 체불 판단": "💸 임금 체불 판단",
-        "원거리 발령 판단": "📍 원거리 발령 판단",
-        "실업인정": "📄 실업인정",
-        "조기재취업수당": "🏗️ 조기재취업수당 요건 판단",
-        "실업급여 신청 가능 시점": "⏰ 실업급여 신청 가능 시점",
-        "일용직(건설일용포함)": "🚧 일용직(건설일용포함) 실업급여"
+    # ★ 변경된 부분: 메뉴와 표시될 텍스트 제목을 한 곳에서 관리 (아이콘 제외) ★
+    # '메뉴 선택'에 대한 기본 제목을 여기에 포함시키거나, 아래에서 별도로 정의합니다.
+    menu_text_titles = {
+        "메뉴 선택": "실업급여 지원 시스템", # '메뉴 선택' 시 보여줄 기본 제목 텍스트
+        "임금 체불 판단": "임금 체불 판단",
+        "원거리 발령 판단": "원거리 발령 판단",
+        "실업인정": "실업인정",
+        "조기재취업수당": "조기재취업수당 요건 판단",
+        "실업급여 신청 가능 시점": "실업급여 신청 가능 시점",
+        "일용직(건설일용포함)": "일용직(건설일용포함)"
     }
 
-    # 모든 메뉴 목록 (순서 중요) - menu_display_names의 키를 사용하여 생성
-    menus = ["메뉴 선택"] + list(menu_display_names.keys())
+    # 모든 메뉴 목록 (순서 중요)
+    # menu_text_titles의 키를 사용하여 생성하여 일관성을 유지
+    menus = list(menu_text_titles.keys())
+
 
     # 1. 초기 메뉴 인덱스 결정 (URL 또는 세션 상태)
     menu_param_from_url = st.query_params.get("menu", None)
@@ -210,10 +213,12 @@ def main():
     selected_idx = st.session_state.current_menu_idx
     selected_menu_name = menus[selected_idx] # 현재 선택된 메뉴의 이름
 
-    # ★ 변경된 부분: 항상 고정된 타이틀과 주의사항 표시 ★
-    # '메뉴 선택'이든 아니든 이 제목은 항상 표시됩니다.
+    # ★ 변경된 부분: 🏗️ 아이콘은 고정하고, 텍스트 제목만 동적으로 변경 ★
+    # menu_text_titles 딕셔너리에서 해당 메뉴의 텍스트 제목을 가져옴
+    display_text_title = menu_text_titles.get(selected_menu_name, selected_menu_name)
+
     st.markdown(
-        "<span style='font-size:22px; font-weight:600;'>🏗️ 조기재취업수당 요건 판단</span>",
+        f"<span style='font-size:22px; font-weight:600;'>🏗️ {display_text_title}</span>",
         unsafe_allow_html=True
     )
     st.markdown(
@@ -221,17 +226,18 @@ def main():
         unsafe_allow_html=True
     )
     st.markdown("---") # 공통 문구 아래 시각적 구분선 추가
-    # --- 고정 문구 추가 종료 ---
+    # --- 고정 아이콘 + 동적 텍스트 제목 추가 종료 ---
 
     if selected_idx == 0:
         # "메뉴 선택" 시 보여줄 초기 화면 내용
+        # 위에 이미 고정 아이콘+동적 제목이 표시되므로, 환영 메시지를 강조합니다.
         st.markdown(
             """
             <div style="padding: 20px; border-radius: 10px; background-color: #f0f8ff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                <h3 style="color: #0d47a1; margin-bottom: 15px;">🌟 실업급여 지원 시스템에 오신 것을 환영합니다!</h3>
+                <h3 style="color: #0d47a1; margin-bottom: 15px;">🌟 환영합니다! 아래에서 궁금한 기능을 선택해 주세요.</h3>
                 <p style="font-size: 16px; line-height: 1.6; color: #333333;">  이 시스템은 <b>실업급여 수급 자격</b> 및 <b>조기재취업수당</b>과 관련된 정보를 쉽고 빠르게 확인하실 수 있도록 돕습니다.
                     <br><br>
-                    궁금한 기능을 위에 있는 <b>'📋 메뉴 선택' 콤보박스에서 선택</b>해 주세요.
+                    <span style="font-weight: bold; color: #e91e63;">'📋 메뉴 선택' 콤보박스에서 기능을 선택해주세요!</span>
                 </p>
                 <ul style="font-size: 15px; line-height: 1.8; margin-top: 15px; color: #333333;">
                     <li>🔹 <b>임금 체불 판단:</b> 임금 체불로 인한 이직 사유 가능성을 판단합니다.</li>
