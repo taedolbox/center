@@ -33,7 +33,7 @@ def daily_worker_eligibility_app():
     input_date_str = input_date.strftime("%Y-%m-%d")
 
     # Streamlit에 HTML/JavaScript 컴포넌트 삽입
-    calendar_html = "<div id='calendar-container'>"
+    calendar_html = "<div id='calendar-container'>" 
 
     for ym, dates in calendar_groups.items():
         year, month = ym.split("-")
@@ -63,33 +63,42 @@ def daily_worker_eligibility_app():
                 extra_cls = "sunday"
             day_num = date.day
             date_str = date.strftime("%m/%d") # MM/DD 형식 (로컬 스토리지 키 및 JS에서 사용)
-            date_full_str = date.strftime("%Y-%m-%d") # YYYY-MM-DD 형식 (JS에서 계산용)
+            date_full_str = date.strftime("%Y-%m-%d") #YYYY-MM-DD 형식 (JS에서 계산용)
             calendar_html += f'<div class="day {extra_cls}" data-date="{date_str}" data-full-date="{date_full_str}" onclick="toggleDate(this)">{day_num}</div>'
         calendar_html += "</div>"
 
     calendar_html += """
     </div>
-    <div id="resultContainer"></div> <style>
+    <div id="resultContainer"></div>
+    <style>
     /* CSS 스타일 */
     .calendar {
-        display: grid; grid-template-columns: repeat(7, 40px); grid-gap: 5px;
-        margin-bottom: 20px; background: #fff; padding: 10px; border-radius: 8px;
+        display: grid; 
+        grid-template-columns: repeat(7, 45px); /* 40px -> 45px: 각 열 너비 증가 */
+        grid-gap: 5px;
+        margin-bottom: 20px; background: #fff; 
+        padding: 10px 1px; /* 상하 10px, 좌우 1px 유지 */
+        border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     .day-header, .empty-day {
-        width: 40px; height: 40px; line-height: 40px; text-align: center;
+        width: 45px; height: 45px; /* 40px -> 45px: 요일 헤더 크기 증가 */
+        line-height: 45px; /* 40px -> 45px: 텍스트 수직 중앙 정렬 유지 */
+        text-align: center;
         font-weight: bold; color: #555;
     }
     .day-header.sunday { color: red; }
     .day-header.saturday { color: blue; }
     .day.sunday { color: red; }
     .day.saturday { color: blue; }
-    .day-header { background: #e0e0e0; border-radius: 5px; font-size: 14px; }
+    .day-header { background: #e0e0e0; border-radius: 5px; font-size: 16px; /* 14px -> 16px */ }
     .empty-day { background: transparent; border: none; }
     .day {
-        width: 40px; height: 40px; line-height: 40px; text-align: center;
+        width: 45px; height: 45px; /* 40px -> 45px: 날짜 칸 크기 증가 */
+        line-height: 45px; /* 40px -> 45px: 텍스트 수직 중앙 정렬 유지 */
+        text-align: center;
         border: 1px solid #ddd; border-radius: 5px; cursor: pointer; user-select: none;
-        transition: background 0.1s ease, border 0.1s ease; font-size: 16px; color: #333;
+        transition: background 0.1s ease, border 0.1s ease; font-size: 18px; /* 16px -> 18px */ color: #333;
     }
     .day:hover { background: #f0f0f0; }
     .day.selected { border: 2px solid #2196F3; background: #2196F3; color: #fff; font-weight: bold; }
@@ -104,6 +113,12 @@ def daily_worker_eligibility_app():
     }
     #resultContainer h3 { color: #0d47a1; margin-top: 20px; margin-bottom: 10px; }
     #resultContainer p { margin: 6px 0; }
+
+    /* 년월 텍스트와 달력 컨테이너 사이 간격 조정 */
+    #calendar-container h4 {
+        margin-bottom: 5px; /* 년월 텍스트 아래 여백을 5px로 줄여 달력에 더 가깝게 붙입니다. */
+    }
+
     /* 다크 모드 스타일 */
     html[data-theme="dark"] #resultContainer {
         background: #262730;
@@ -111,6 +126,10 @@ def daily_worker_eligibility_app():
     }
     html[data-theme="dark"] #resultContainer h3 {
         color: #90CAF9;
+    }
+    /* ★★★ 이 부분이 변경되었습니다: 다크 모드에서 년월 텍스트 보이도록 색상 강제 적용 ★★★ */
+    html[data-theme="dark"] h4 {
+        color: #FAFAFA !important; /* 모든 h4에 대해 밝은 색으로 설정하고 !important로 강제 적용 */
     }
     html[data-theme="dark"] .day {
         background-color: #31333F;
@@ -137,8 +156,8 @@ def daily_worker_eligibility_app():
 
     // Python에서 넘겨받은 기준 날짜 관련 문자열
     const FOURTEEN_DAYS_START_STR = '""" + fourteen_days_prior_start + """'; 
-    const FOURTEEN_DAYS_END_STR = '""" + fourteen_days_prior_end + """';     
-    const INPUT_DATE_STR = '""" + input_date_str + """';                     
+    const FOURTEEN_DAYS_END_STR = '""" + fourteen_days_prior_end + """';    
+    const INPUT_DATE_STR = '""" + input_date_str + """';             
 
     // --- Helper Functions ---
     // 두 날짜 사이의 일수 계산 (시작일과 종료일 포함)
@@ -166,7 +185,7 @@ def daily_worker_eligibility_app():
         return d;
     }
 
-    // Date 객체를 YYYY-MM-DD 형식 문자열로 포맷
+    // Date 객체를曌-MM-DD 형식 문자열로 포맷
     function formatDateToYYYYMMDD(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -176,7 +195,7 @@ def daily_worker_eligibility_app():
 
     // --- Core Logic: 계산 및 결과 표시 ---
     function calculateAndDisplayResult(selectedMMDD) {
-        // MM/DD 형식의 선택된 날짜들을 YYYY-MM-DD 형식으로 변환하여 사용
+        // MM/DD 형식의 선택된 날짜들을曌-MM-DD 형식으로 변환하여 사용
         const selectedFullDates = selectedMMDD.map(mmdd => {
             const foundDate = CALENDAR_DATES_RAW.find(d => d.endsWith(mmdd.replace('/', '-')));
             return foundDate || '';
@@ -211,21 +230,23 @@ def daily_worker_eligibility_app():
             return;
         }
 
-        // --- 특수 케이스 2: 7월 7일 (예시에서 고정된 조건 불충족 날짜)이 선택된 경우 ---
-        // (이 부분은 예시를 위한 것으로, 실제 앱에서는 제거하거나 사용자가 설정하도록 변경할 수 있습니다.)
-        const currentYear = inputDate.getFullYear();
-        const fixedSpecialDate = `${currentYear}-07-07`; 
-        if (selectedFullDates.includes(fixedSpecialDate)) {
+        // --- 특수 케이스 2: 기준 날짜(INPUT_DATE_STR)가 근무일로 선택된 경우 ---
+        // (사용자가 Streamlit 날짜 선택기에서 고른 날짜가 달력에서 근무일로 체크된 경우)
+        if (selectedFullDates.includes(INPUT_DATE_STR)) {
+            // 기준 날짜가 근무일이므로 조건 1, 2 모두 불충족으로 간주 (사용자 요청)
+            const nextPossibleApplicationDate = new Date(INPUT_DATE_STR);
+            nextPossibleApplicationDate.setDate(nextPossibleApplicationDate.getDate() + 14 + 1); // 기준 날짜 + 14일 무근무 후 +1일
+
             const finalHtml = `
                 <h3 style="color: red;">📌 조건 판단</h3>
-                <p style="color: red;">❌ 조건 1 불충족: ${fixedSpecialDate} 근무로 인한 미충족</p>
-                <p style="color: red;">❌ 조건 2 불충족: ${fixedSpecialDate} 근무로 인한 미충족</p>
+                <p style="color: red;">❌ 조건 1 불충족: 기준 날짜(${INPUT_DATE_STR}) 근무로 인한 미충족</p>
+                <p style="color: red;">❌ 조건 2 불충족: 기준 날짜(${INPUT_DATE_STR}) 근무로 인한 미충족</p>
                 <h3 style="color: red;">📌 최종 판단</h3>
                 <p style="color: red;">❌ 일반일용근로자: 신청 불가능</p>
                 <p style="color: red;">❌ 건설일용근로자: 신청 불가능</p>
                 <h3>📌 종합 신청 가능일</h3>
-                <p style="color: red;">${fixedSpecialDate} 근무 기록으로 인해 현재 신청 불가능합니다.</p>
-                <p style="color: red;">(이 경우, ${fixedSpecialDate}이 마지막 근무일이라면 ${formatDateToYYYYMMDD(new Date(new Date(fixedSpecialDate).setDate(new Date(fixedSpecialDate).getDate() + 14 + 1)))} 이후 신청 가능) (이후 근로제공이 없다는 전제)</p>
+                <p style="color: red;">기준 날짜(${INPUT_DATE_STR})에 근무 기록이 있으므로 현재 신청 불가능합니다.</p>
+                <p style="color: red;">(이 경우, ${INPUT_DATE_STR}이 마지막 근무일이라면 **${formatDateToYYYYMMDD(nextPossibleApplicationDate)}** 이후 신청 가능) (이후 근로제공이 없다는 전제)</p>
                 <p>※ 위의 '신청 가능일'은 이후 근로제공이 전혀 없다는 전제 하에 계산된 것이며, 실제 고용센터 판단과는 다를 수 있습니다.</p>
             `;
             document.getElementById('resultContainer').innerHTML = finalHtml;
@@ -400,9 +421,7 @@ def daily_worker_eligibility_app():
     }
 
 
-    // ★ 중요 변경: window.onload 대신 DOMContentLoaded 사용
-    // 이 이벤트는 HTML 문서가 완전히 로드되고 파싱되었을 때 발생하며,
-    // 스크립트 실행에 더 안정적입니다.
+    // DOMContentLoaded 이벤트 리스너: HTML 문서가 완전히 로드되고 파싱된 후 스크립트 실행
     document.addEventListener('DOMContentLoaded', function() {
         loadSelectedDates();
     });
@@ -410,8 +429,4 @@ def daily_worker_eligibility_app():
     """
 
     st.components.v1.html(calendar_html, height=1500, scrolling=False)
-
-# Streamlit 앱 실행
-if __name__ == "__main__":
-    daily_worker_eligibility_app()
 
