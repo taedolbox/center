@@ -74,15 +74,15 @@ def daily_worker_eligibility_app():
     /* CSS 스타일 */
     .calendar {
         display: grid; 
-        grid-template-columns: repeat(7, 45px); /* 40px -> 45px: 각 열 너비 증가 */
-        grid-gap: 4px;
+        grid-template-columns: repeat(7, 44px); /* 40px -> 45px: 각 열 너비 증가 */
+        grid-gap: 5px;
         margin-bottom: 20px; background: #fff; 
         padding: 10px 1px; /* 상하 10px, 좌우 1px 유지 */
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     .day-header, .empty-day {
-        width: 45px; height: 45px; /* 40px -> 45px: 요일 헤더 크기 증가 */
+        width: 44px; height: 44px; /* 40px -> 45px: 요일 헤더 크기 증가 */
         line-height: 45px; /* 40px -> 45px: 텍스트 수직 중앙 정렬 유지 */
         text-align: center;
         font-weight: bold; color: #555;
@@ -94,7 +94,7 @@ def daily_worker_eligibility_app():
     .day-header { background: #e0e0e0; border-radius: 5px; font-size: 16px; /* 14px -> 16px */ }
     .empty-day { background: transparent; border: none; }
     .day {
-        width: 45px; height: 45px; /* 40px -> 45px: 날짜 칸 크기 증가 */
+        width: 44px; height: 44px; /* 40px -> 45px: 날짜 칸 크기 증가 */
         line-height: 45px; /* 40px -> 45px: 텍스트 수직 중앙 정렬 유지 */
         text-align: center;
         border: 1px solid #ddd; border-radius: 5px; cursor: pointer; user-select: none;
@@ -129,7 +129,7 @@ def daily_worker_eligibility_app():
     }
     /* ★★★ 이 부분이 변경되었습니다: 다크 모드에서 년월 텍스트 보이도록 색상 강제 적용 ★★★ */
     html[data-theme="dark"] h4 {
-        color: #FAFAFA !important; /* 모든 h4에 대해 밝은 색으로 설정하고 !important로 강제 적용 */
+        color: #FFFFFF !important; /* 모든 h4에 대해 밝은 색으로 설정하고 !important로 강제 적용 */
     }
     html[data-theme="dark"] .day {
         background-color: #31333F;
