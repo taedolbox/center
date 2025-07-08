@@ -14,8 +14,7 @@ def main():
         layout="centered" # 페이지 내용을 중앙에 정렬
     )
 
-    # 모든 CSS 스타일을 여기에 직접 삽입합니다.
-    # 콤보박스 디자인, 다크 모드, 달력 디자인이 모두 포함되어 있습니다.
+    # 모든 CSS 스타일을 여기에 직접 삽입합니다. (이 부분은 변경 없음)
     st.markdown("""
     <style>
     /* 콤보박스 선택 영역 (현재 선택된 값 표시되는 부분) */
@@ -146,17 +145,6 @@ def main():
     """, unsafe_allow_html=True)
 
 
-    # 모든 메뉴 목록 (순서 중요)
-    menus = [
-        "메뉴 선택", # 초기 화면을 위한 메뉴
-        "임금 체불 판단",
-        "원거리 발령 판단",
-        "실업인정",
-        "조기재취업수당",
-        "실업급여 신청 가능 시점",
-        "일용직(건설일용포함)"
-    ]
-
     # 각 메뉴에 연결될 함수 매핑
     menu_functions = {
         "임금 체불 판단": wage_delay_app,
@@ -166,6 +154,19 @@ def main():
         "실업급여 신청 가능 시점": lambda: st.info("이곳은 일반 실업급여 신청 가능 시점 안내 페이지입니다. 관련 기능이 구현되면 이곳에 표시됩니다."),
         "일용직(건설일용포함)": daily_worker_eligibility_app
     }
+
+    # 메뉴와 표시될 제목을 한 곳에서 관리 (이 딕셔너리는 이제 고정된 제목을 위해 사용되지 않습니다.)
+    menu_display_names = {
+        "임금 체불 판단": "💸 임금 체불 판단",
+        "원거리 발령 판단": "📍 원거리 발령 판단",
+        "실업인정": "📄 실업인정",
+        "조기재취업수당": "🏗️ 조기재취업수당 요건 판단",
+        "실업급여 신청 가능 시점": "⏰ 실업급여 신청 가능 시점",
+        "일용직(건설일용포함)": "🚧 일용직(건설일용포함) 실업급여"
+    }
+
+    # 모든 메뉴 목록 (순서 중요) - menu_display_names의 키를 사용하여 생성
+    menus = ["메뉴 선택"] + list(menu_display_names.keys())
 
     # 1. 초기 메뉴 인덱스 결정 (URL 또는 세션 상태)
     menu_param_from_url = st.query_params.get("menu", None)
@@ -204,7 +205,7 @@ def main():
     # --- 콤보박스와 아래 콘텐츠를 구분하는 시각적 구분선 추가 ---
     st.markdown("---")
 
-    # --- ★여기에 요청하신 공통 문구를 추가합니다 (모든 페이지에 고정)★ ---
+    # ★ 변경된 부분: 이제 이 제목과 주의사항은 조건 없이 항상 표시됩니다. ★
     st.markdown(
         "<span style='font-size:22px; font-weight:600;'>🏗️ 조기재취업수당 요건 판단</span>",
         unsafe_allow_html=True
@@ -214,7 +215,7 @@ def main():
         unsafe_allow_html=True
     )
     st.markdown("---") # 공통 문구 아래 시각적 구분선 추가
-    # --- 공통 문구 추가 종료 ---
+    # --- 고정 문구 추가 종료 ---
 
     # 3. 세션 상태의 current_menu_idx에 따라 화면 출력
     selected_idx = st.session_state.current_menu_idx
@@ -222,6 +223,7 @@ def main():
 
     if selected_idx == 0:
         # "메뉴 선택" 시 보여줄 초기 화면 내용
+        # 이제 위에 고정된 제목/주의사항 아래에 환영 메시지가 표시됩니다.
         st.markdown(
             """
             <div style="padding: 20px; border-radius: 10px; background-color: #f0f8ff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
