@@ -155,7 +155,8 @@ def main():
         "일용직(건설일용포함)": daily_worker_eligibility_app
     }
 
-    # 메뉴와 표시될 제목을 한 곳에서 관리 (이 딕셔너리는 이제 고정된 제목을 위해 사용되지 않습니다.)
+    # 메뉴와 표시될 제목을 한 곳에서 관리
+    # '메뉴 선택'은 여기에 포함시키지 않습니다.
     menu_display_names = {
         "임금 체불 판단": "💸 임금 체불 판단",
         "원거리 발령 판단": "📍 원거리 발령 판단",
@@ -205,7 +206,12 @@ def main():
     # --- 콤보박스와 아래 콘텐츠를 구분하는 시각적 구분선 추가 ---
     st.markdown("---")
 
-    # ★ 변경된 부분: 이제 이 제목과 주의사항은 조건 없이 항상 표시됩니다. ★
+    # 3. 세션 상태의 current_menu_idx에 따라 화면 출력
+    selected_idx = st.session_state.current_menu_idx
+    selected_menu_name = menus[selected_idx] # 현재 선택된 메뉴의 이름
+
+    # ★ 변경된 부분: 항상 고정된 타이틀과 주의사항 표시 ★
+    # '메뉴 선택'이든 아니든 이 제목은 항상 표시됩니다.
     st.markdown(
         "<span style='font-size:22px; font-weight:600;'>🏗️ 조기재취업수당 요건 판단</span>",
         unsafe_allow_html=True
@@ -217,13 +223,8 @@ def main():
     st.markdown("---") # 공통 문구 아래 시각적 구분선 추가
     # --- 고정 문구 추가 종료 ---
 
-    # 3. 세션 상태의 current_menu_idx에 따라 화면 출력
-    selected_idx = st.session_state.current_menu_idx
-    selected_menu_name = menus[selected_idx] # 현재 선택된 메뉴의 이름
-
     if selected_idx == 0:
         # "메뉴 선택" 시 보여줄 초기 화면 내용
-        # 이제 위에 고정된 제목/주의사항 아래에 환영 메시지가 표시됩니다.
         st.markdown(
             """
             <div style="padding: 20px; border-radius: 10px; background-color: #f0f8ff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
