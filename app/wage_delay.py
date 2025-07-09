@@ -2,7 +2,7 @@ import streamlit as st
 from app.questions import get_wage_delay_questions
 
 def wage_delay_app():
-    st.subheader("🔴 임금 체불에 의한 판단")
+#    st.subheader("🔴 임금 체불에 의한 판단")
     questions = get_wage_delay_questions()
 
     if "wage_step" not in st.session_state:
