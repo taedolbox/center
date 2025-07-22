@@ -205,7 +205,7 @@ def main():
     display_text_title = menu_text_titles.get(selected_menu_name, selected_menu_name)
 
     st.markdown(
-        f"<span style='font-size:22വ
+        f"<span style='font-size:22px; font-weight:600;'>🏗️ {display_text_title}</span>",
 
         page_title="실업급여 지원 시스템",
         page_icon="💼",
