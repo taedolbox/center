@@ -2,8 +2,6 @@ import streamlit as st
 from app.questions import get_employment_questions, get_self_employment_questions
 
 def early_reemployment_app():
-
-
     if "early_step" not in st.session_state:
         st.session_state.early_step = 0
         st.session_state.early_answers = []
@@ -51,7 +49,7 @@ def early_reemployment_app():
             required = ["예", "예", "예", "예", "아니요", "아니요", "아니요", "아니요", "아니요", "아니요"]
             questions = get_employment_questions()
         else:
-            required = ["예", "예", "예", "아니요", "예", "아니요"]
+            required = ["예", "예", "예", "아니요", "아니요"]  # 자영업 준비활동 질문 삭제 후 수정
             questions = get_self_employment_questions()
 
         mismatches = [
