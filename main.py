@@ -229,7 +229,7 @@ def main():
         st.markdown(
             """
             <div style="padding: 20px; border-radius: 10px; background-color: #f0f8ff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                <h3 style="color: #0d47a1; margin-bottom: 15px;">🌟 환영합니다! 아래에서 궁금한 기능을 선택해 주세요.</h3>
+                <h3 style="color: #0d47a1; margin-bottom: 15px;">🌟 환영합니다! 궁금한 기능을 선택해 주세요.</h3>
                 <p style="font-size: 16px; line-height: 1.6; color: #333333;"> 이 시스템은 <b>실업급여 수급 자격</b> 및 <b>조기재취업수당</b>과 관련된 정보를 쉽고 빠르게 확인하실 수 있도록 돕습니다.
                     <br><br>
                     <span style="font-weight: bold; color: #e91e63;">'📋 메뉴 선택' 콤보박스에서 기능을 선택해주세요!</span>
