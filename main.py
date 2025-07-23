@@ -12,37 +12,47 @@ def main():
         layout="centered" # 페이지 내용을 중앙에 정렬
     )
 
-    # 모든 CSS 스타일을 여기에 직접 삽입합니다. (이 부분은 변경 없음)
+    # 모든 CSS 스타일 (오른쪽 상단 메뉴 숨기기 추가)
     st.markdown("""
     <style>
+    /* 오른쪽 상단 메뉴(햄버거 메뉴) 숨기기 */
+    [data-testid="stToolbar"] {
+        display: none !important;
+    }
+    /* 오른쪽 상단 메뉴 버튼(햄버거 아이콘) 숨기기 */
+    [data-testid="stToolbarActions"] {
+        display: none !important;
+    }
+
+    /* 기존 스타일 유지 */
     /* 콤보박스 선택 영역 (현재 선택된 값 표시되는 부분) */
     div[data-baseweb="select"] > div:first-child {
-        border: 2px solid #2196F3 !important; /* 기존 테두리 유지 */
-        color: #2196F3 !important;            /* 텍스트 색상을 파란색으로 변경 */
+        border: 2px solid #2196F3 !important;
+        color: #2196F3 !important;
         font-weight: 600 !important;
-        background-color: #E3F2FD !important; /* 배경색을 밝은 파랑으로 변경 */
+        background-color: #E3F2FD !important;
     }
 
     /* 콤보박스 내부 텍스트 (현재 선택된 값) */
     div[data-baseweb="select"] span {
-        color: #2196F3 !important; /* 텍스트 색상을 파란색으로 변경 */
+        color: #2196F3 !important;
         font-weight: 600 !important;
     }
 
     /* 드롭다운 리스트 컨테이너 */
     div[data-baseweb="popover"] {
-        z-index: 9999 !important; /* 다른 요소 위에 오도록 z-index 높임 */
-        background-color: #FFFFFF !important; /* 드롭다운 배경색 하얀색으로 명확하게 */
-        border: 1px solid #2196F3 !important; /* 테두리 추가 */
+        z-index: 9999 !important;
+        background-color: #FFFFFF !important;
+        border: 1px solid #2196F3 !important;
         border-radius: 8px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important; /* 그림자 추가 */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
     }
 
     /* 드롭다운 리스트 항목 */
     div[data-baseweb="select"] ul[role="listbox"] li {
         color: #2196F3 !important;
         font-weight: 600 !important;
-        padding: 10px 15px !important; /* 패딩 조정 */
+        padding: 10px 15px !important;
     }
 
     /* 드롭다운 리스트 항목 호버 시 */
@@ -51,12 +61,12 @@ def main():
         color: white !important;
     }
 
-    /* 스크롤바 스타일링 (선택 사항, 깔끔하게 보이게) */
+    /* 스크롤바 스타일링 */
     div[data-baseweb="popover"]::-webkit-scrollbar {
         width: 8px;
     }
     div[data-baseweb="popover"]::-webkit-scrollbar-thumb {
-        background-color: #bbdefb; /* 연한 파랑 */
+        background-color: #bbdefb;
         border-radius: 4px;
     }
     div[data-baseweb="popover"]::-webkit-scrollbar-track {
@@ -65,12 +75,12 @@ def main():
 
     /* 다크 모드 스타일 */
     html[data-theme="dark"] div[data-baseweb="select"] > div:first-child {
-        background-color: #31333F !important; /* 다크 모드 시 배경 */
-        color: #FAFAFA !important; /* 다크 모드 시 텍스트 */
+        background-color: #31333F !important;
+        color: #FAFAFA !important;
         border: 2px solid #4B4B4B !important;
     }
     html[data-theme="dark"] div[data-baseweb="select"] span {
-        color: #FAFAFA !important; /* 다크 모드 시 텍스트 */
+        color: #FAFAFA !important;
     }
     html[data-theme="dark"] div[data-baseweb="popover"] {
         background-color: #262730 !important;
@@ -142,7 +152,6 @@ def main():
     </style>
     """, unsafe_allow_html=True)
 
-
     # 각 메뉴에 연결될 함수 매핑
     menu_functions = {
         "실업인정": unemployment_recognition_app,
@@ -150,19 +159,16 @@ def main():
         "일용직(건설일용포함)": daily_worker_eligibility_app
     }
 
-    # ★ 변경된 부분: 메뉴와 표시될 텍스트 제목을 한 곳에서 관리 (아이콘 제외) ★
-    # '메뉴 선택'에 대한 기본 제목을 여기에 포함시키거나, 아래에서 별도로 정의합니다.
+    # 메뉴와 표시될 텍스트 제목
     menu_text_titles = {
-        "메뉴 선택": "실업급여 지원 시스템", # '메뉴 선택' 시 보여줄 기본 제목 텍스트
+        "메뉴 선택": "실업급여 지원 시스템",
         "실업인정": "실업인정",
         "조기재취업수당": "조기재취업수당 요건 판단",
         "일용직(건설일용포함)": "일용직(건설일용포함)"
     }
 
-    # 모든 메뉴 목록 (순서 중요)
-    # menu_text_titles의 키를 사용하여 생성하여 일관성을 유지
+    # 메뉴 목록
     menus = list(menu_text_titles.keys())
-
 
     # 1. 초기 메뉴 인덱스 결정 (URL 또는 세션 상태)
     menu_param_from_url = st.query_params.get("menu", None)
@@ -205,8 +211,7 @@ def main():
     selected_idx = st.session_state.current_menu_idx
     selected_menu_name = menus[selected_idx] # 현재 선택된 메뉴의 이름
 
-    # ★ 변경된 부분: 🏗️ 아이콘은 고정하고, 텍스트 제목만 동적으로 변경 ★
-    # menu_text_titles 딕셔너리에서 해당 메뉴의 텍스트 제목을 가져옴
+    # 메뉴 제목 표시
     display_text_title = menu_text_titles.get(selected_menu_name, selected_menu_name)
 
     st.markdown(
@@ -218,16 +223,14 @@ def main():
         unsafe_allow_html=True
     )
     st.markdown("---") # 공통 문구 아래 시각적 구분선 추가
-    # --- 고정 아이콘 + 동적 텍스트 제목 추가 종료 ---
 
     if selected_idx == 0:
         # "메뉴 선택" 시 보여줄 초기 화면 내용
-        # 위에 이미 고정 아이콘+동적 제목이 표시되므로, 환영 메시지를 강조합니다.
         st.markdown(
             """
             <div style="padding: 20px; border-radius: 10px; background-color: #f0f8ff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                 <h3 style="color: #0d47a1; margin-bottom: 15px;">🌟 환영합니다! 아래에서 궁금한 기능을 선택해 주세요.</h3>
-                <p style="font-size: 16px; line-height: 1.6; color: #333333;">  이 시스템은 <b>실업급여 수급 자격</b> 및 <b>조기재취업수당</b>과 관련된 정보를 쉽고 빠르게 확인하실 수 있도록 돕습니다.
+                <p style="font-size: 16px; line-height: 1.6; color: #333333;"> 이 시스템은 <b>실업급여 수급 자격</b> 및 <b>조기재취업수당</b>과 관련된 정보를 쉽고 빠르게 확인하실 수 있도록 돕습니다.
                     <br><br>
                     <span style="font-weight: bold; color: #e91e63;">'📋 메뉴 선택' 콤보박스에서 기능을 선택해주세요!</span>
                 </p>
@@ -244,7 +247,7 @@ def main():
         )
         st.markdown("---") # 또 다른 시각적 구분선
     else:
-        # 선택된 메뉴에 해당하는 함수 호출 (menu_functions 딕셔너리 사용)
+        # 선택된 메뉴에 해당하는 함수 호출
         if selected_menu_name in menu_functions:
             menu_functions[selected_menu_name]()
         else:
